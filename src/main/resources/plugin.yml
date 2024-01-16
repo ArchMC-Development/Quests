@@ -1,0 +1,6 @@
+name: Quests
+version: ${project.version}
+author: CodePunisher
+main: com.codepunisher.quests.QuestsPlugin
+softdepend: [ PlaceholderAPI, ProtocolLib, Vault ]
+api-version: 1.20
