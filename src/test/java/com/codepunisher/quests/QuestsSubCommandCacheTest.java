@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class QuestsSubCommandTest {
+public class QuestsSubCommandCacheTest {
     private static final String SUB_COMMAND_TEST = "SubCommandTest";
     private QuestsSubCommandCache subCommandCache;
     private QuestsSubCommand mockSubCommand;
@@ -25,6 +25,7 @@ public class QuestsSubCommandTest {
     @After
     public void tearDown() {
         subCommandCache = null;
+        mockSubCommand = null;
     }
 
     @Test
