@@ -7,29 +7,35 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+
 import static org.junit.Assert.assertNotNull;
 
 public class QuestsConfigTest {
-    private JavaPlugin plugin;
-    private QuestsConfig questsConfig;
+  private JavaPlugin plugin;
+  private QuestsConfig questsConfig;
 
-    @Before
-    public void setUp() {
-        MockBukkit.mock();
-        plugin = MockBukkit.createMockPlugin();
-        questsConfig = new QuestsConfig();
-    }
+  @Before
+  public void setUp() {
+    MockBukkit.mock();
+    plugin = MockBukkit.createMockPlugin();
+    questsConfig = new QuestsConfig();
+  }
 
-    @After
-    public void tearDown() {
-        MockBukkit.unmock();
-        this.plugin = null;
-        this.questsConfig = null;
-    }
+  @After
+  public void tearDown() {
+    MockBukkit.unmock();
+    this.plugin = null;
+    this.questsConfig = null;
+  }
 
-    @Test
-    public void questReloadTest() {
-        questsConfig.reload(plugin);
-        assertNotNull(questsConfig.getHelloMessage());
+  @Test
+  public void questReloadTest() throws IllegalAccessException {
+    questsConfig.reload(plugin);
+
+    for (Field field : questsConfig.getClass().getDeclaredFields()) {
+      field.setAccessible(true);
+      assertNotNull(field.get(questsConfig));
     }
+  }
 }

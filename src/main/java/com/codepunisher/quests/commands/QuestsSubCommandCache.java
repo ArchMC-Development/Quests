@@ -1,22 +1,19 @@
 package com.codepunisher.quests.commands;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class QuestsSubCommandCache {
-    private final Map<String, QuestsSubCommand> subCommandMap = new HashMap<>();
+  private final Map<String, QuestsSubCommand> subCommandMap = new LinkedHashMap<>();
 
-    public void register(QuestsSubCommand subCommand) {
-        subCommandMap.put(subCommand.getCommand().toLowerCase(), subCommand);
-    }
+  public void register(QuestsSubCommand subCommand) {
+    subCommandMap.put(subCommand.getCommand().toLowerCase(), subCommand);
+  }
 
-    public Optional<QuestsSubCommand> getSubCommand(String key) {
-        return Optional.ofNullable(subCommandMap.get(key.toLowerCase()));
-    }
+  public Optional<QuestsSubCommand> getSubCommand(String key) {
+    return Optional.ofNullable(subCommandMap.get(key.toLowerCase()));
+  }
 
-    public Collection<QuestsSubCommand> getSubCommands() {
-        return subCommandMap.values();
-    }
+  public Collection<QuestsSubCommand> getSubCommands() {
+    return subCommandMap.values();
+  }
 }

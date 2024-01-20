@@ -1,17 +1,17 @@
 package com.codepunisher.quests.commands;
 
-import org.bukkit.command.CommandSender;
+import com.codepunisher.quests.commands.lib.CommandCall;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public interface QuestsSubCommand {
-    String getCommand();
+import java.util.function.Consumer;
 
-    String usage();
+@Getter
+@AllArgsConstructor
+public abstract class QuestsSubCommand {
+    private final String command;
+    private final String usage;
+    private final String permission;
 
-    String permission();
-
-    String requirePlayerArgument();
-
-    boolean requirePlayerSender();
-
-    boolean run(CommandSender sender, String[] args);
+    protected abstract Consumer<CommandCall> getCommandCallConsumer();
 }
