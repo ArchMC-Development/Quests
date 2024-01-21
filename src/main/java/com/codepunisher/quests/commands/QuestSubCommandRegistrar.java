@@ -20,7 +20,8 @@ public class QuestSubCommandRegistrar {
         new QuestsConfigureSubCommand(
             questsConfig.getQuestConfigureSubCommand(),
             questsConfig.getQuestConfigureSubCommandUsage(),
-            questsConfig.getQuestConfigureSubCommandPermission()));
+            questsConfig.getQuestConfigureSubCommandPermission(),
+            questsConfig));
 
     subCommandCache.register(
         new QuestsJoinSubCommand(

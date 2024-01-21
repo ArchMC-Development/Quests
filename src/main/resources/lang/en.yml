@@ -1,4 +1,8 @@
 messages:
+ # # # # # # # # # #
+ # COMMANDS        #
+ # # # # # # # # # #
+ #
  # The primary quest command/aliases
  QuestCommands:
     - "quest"
@@ -45,7 +49,71 @@ messages:
   - "%subcommands%"
   - "&7&m-------------------------"
 
- # Messages
+ # # # # # # # # # #
+ # GENERIC MENU    #
+ # # # # # # # # # #
+ #
+ # ----- ( IMPORTANT INFORMATION ) -----
+ # Menu types -> CONFIGURATION_MAIN, CONFIGURATION_QUESTS, CONFIGURATION_CATEGORY, CONFIGURATION_DIFFICULTY
+ # Sounds are optional (just remove from configuration)
+ GenericBackGroundItems:
+  1:
+   Material: BLACK_STAINED_GLASS_PANE
+   Name: "&r"
+   Lore: []
+   MenuTypes:
+   - CONFIGURATION_MAIN
+   - CONFIGURATION_QUESTS
+   - CONFIGURATION_CATEGORY
+   - CONFIGURATION_DIFFICULTY
+   ButtonType: NONE
+   Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 41, 42, 43, 44]
+   CloseOnClick: false
+  2:
+   Material: BARRIER
+   Name: "&c&lClose"
+   Lore:
+    - "&7&oClick to close"
+   MenuTypes:
+    - CONFIGURATION_MAIN
+    - CONFIGURATION_QUESTS
+    - CONFIGURATION_CATEGORY
+    - CONFIGURATION_DIFFICULTY
+   ButtonType: NONE
+   Slots: [40]
+   CloseOnClick: true
+
+ # # # # # # # # # #
+ # CONFIGURE MENU  #
+ # # # # # # # # # #
+ QuestConfigurationMenu:
+  Size: 45
+  Title: "Quest Configurator"
+  OpenSound: ITEM_BOOK_PAGE_TURN
+  MenuType: CONFIGURATION_MAIN
+  GuiItems:
+   1:
+    Material: STONE_PICKAXE
+    Name: "&b&lQuests"
+    Lore:
+     - "&7Click to configure quests"
+    ButtonType: QUEST_CONFIGURE
+    Slots: [ 20 ]
+    ClickSound: UI_BUTTON_CLICK
+    CloseOnClick: false
+   2:
+    Material: OAK_LOG
+    Name: "&6&lCategory"
+    Lore:
+     - "&7Click to configure categories"
+    ButtonType: CATEGORY_CONFIGURE
+    Slots: [ 22 ]
+    ClickSound: UI_BUTTON_CLICK
+    CloseOnClick: false
+
+ # # # # # # # # # # #
+ # GENERIC MESSAGES  #
+ # # # # # # # # # # #
  CommandDoesNotExist: "&cThat command does not exist!"
  NoPermission: "&cYou don't have permission to do this!"
  NoConsole: "&cOnly players can execute this command!"
