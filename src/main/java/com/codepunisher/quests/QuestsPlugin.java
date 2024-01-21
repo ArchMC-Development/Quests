@@ -5,6 +5,7 @@ import com.codepunisher.quests.commands.QuestSubCommandRegistrar;
 import com.codepunisher.quests.commands.QuestsSubCommandCache;
 import com.codepunisher.quests.commands.lib.CommandRegistrar;
 import com.codepunisher.quests.config.QuestsConfig;
+import fr.mrmicky.fastinv.FastInvManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class QuestsPlugin extends JavaPlugin {
@@ -21,5 +22,7 @@ public class QuestsPlugin extends JavaPlugin {
 
     CommandRegistrar commandRegistrar = new CommandRegistrar(this, questsConfig);
     commandRegistrar.registerCommands(questsCommand, questsConfig.getQuestCommands().toArray(new String[0]));
+
+    FastInvManager.register(this);
   }
 }

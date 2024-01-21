@@ -4,6 +4,7 @@ import com.codepunisher.quests.util.UtilChat;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -60,6 +61,7 @@ public class GuiItem {
     if (meta != null) {
       meta.setDisplayName(UtilChat.colorize(name));
       meta.setLore(lore.stream().map(UtilChat::colorize).collect(Collectors.toList()));
+      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       item.setItemMeta(meta);
     }
     return item;

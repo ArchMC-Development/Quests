@@ -11,7 +11,8 @@ import java.util.function.Consumer;
 //TODO: Create/Delete/Edit
 //TODO: Configurable category
 //TODO: Configurable difficulty
-//TODO: Quest -> name, task types list, amount per task, category, dependencies (other quests), difficulty
+//TODO: Quest (long form) -> name, task types list, amount per task, category, dependencies (other quests), rewards
+//TODO: Quest (daily) -> name, task types list, min-max randomized per task, rewards
 public class QuestsConfigureSubCommand extends QuestsSubCommand {
     private final QuestsConfig config;
 

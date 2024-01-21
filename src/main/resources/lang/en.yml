@@ -81,6 +81,7 @@ messages:
     - CONFIGURATION_DIFFICULTY
    ButtonType: NONE
    Slots: [40]
+   ClickSound: UI_BUTTON_CLICK
    CloseOnClick: true
 
  # # # # # # # # # #
@@ -98,7 +99,7 @@ messages:
     Lore:
      - "&7Click to configure quests"
     ButtonType: QUEST_CONFIGURE
-    Slots: [ 20 ]
+    Slots: [ 21 ]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
    2:
@@ -107,7 +108,7 @@ messages:
     Lore:
      - "&7Click to configure categories"
     ButtonType: CATEGORY_CONFIGURE
-    Slots: [ 22 ]
+    Slots: [ 23 ]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
 
