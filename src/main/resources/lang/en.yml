@@ -2,52 +2,53 @@ messages:
  # # # # # # # # # #
  # COMMANDS        #
  # # # # # # # # # #
- #
- # The primary quest command/aliases
- QuestCommands:
-    - "quest"
+ commands:
+  # The primary quest command/aliases
+  #
+  # If one of these commands are executed
+  # the tab completion commands will be
+  # the following within this file, not
+  # any other language file
+  QuestCommands:
+     - "quest"
+     - "quests"
 
- # Quest reload sub command
- QuestReloadSubCommand: "reload"
- QuestReloadSubCommandUsage: "reload quest configuration"
- QuestReloadSubCommandPermission: "quests.reload"
+  # Sub commands
+  ReloadSubCommand:
+    Command: "reload"
+    Usage: "reload quest configuration"
+  ConfigureSubCommand:
+    Command: "configure"
+    Usage: "configure quest system"
+  JoinSubCommand:
+    Command: "join"
+    Usage: "join a quest"
+  LeaveSubCommand:
+    Command: "leave"
+    Usage: "leave a quest"
+  StatusSubCommand:
+    Command: "status"
+    Usage: "view status of a joined quest"
+  MenuSubCommand:
+    Command: "menu"
+    Usage: "open quest menu"
+  LanguageSubCommand:
+   Command: "language"
+   Usage: "change language command"
 
- # Quest creation sub command
- QuestConfigureSubCommand: "configure"
- QuestConfigureSubCommandUsage: "configure quest system"
- QuestConfigureSubCommandPermission: "quests.configure"
 
- # Quest join command
- QuestJoinSubCommand: "join"
- QuestJoinSubCommandUsage: "join a quest"
- QuestJoinSubCommandPermission: "quests.join"
+  # Quest sub command viewer
+  #
+  # %1% -> quest primary command
+  # %2% -> quest sub command
+  # %3% -> quest sub command usage
+  QuestSubCommandView: "&a/%1% %2% &8- &f%3%"
 
- # Quest leave command
- QuestLeaveSubCommand: "leave"
- QuestLeaveSubCommandUsage: "leave a quest"
- QuestLeaveSubCommandPermission: "quests.leave"
-
- # Quest status command
- QuestStatusSubCommand: "status"
- QuestStatusSubCommandUsage: "view status of joined quest"
- QuestStatusSubCommandPermission: "quests.status"
-
- # Quest menu command
- QuestMenuSubCommand: "menu"
- QuestMenuSubCommandUsage: "open quest menu"
- QuestMenuSubCommandPermission: "quests.menu"
-
- # Quest sub command viewer
- # %1% -> quest primary command
- # %2% -> quest sub command
- # %3% -> quest sub command usage
- QuestSubCommandView: "&a/%1% %2% &8- &f%3%"
-
- # %subcommands% -> Displays the above
- QuestCommandsViewList:
-  - "&7&m-------------------------"
-  - "%subcommands%"
-  - "&7&m-------------------------"
+  # %subcommands% -> Displays the above
+  QuestCommandsViewList:
+   - "&7&m-------------------------"
+   - "%subcommands%"
+   - "&7&m-------------------------"
 
  # # # # # # # # # #
  # GENERIC MENU    #
@@ -55,6 +56,7 @@ messages:
  #
  # ----- ( IMPORTANT INFORMATION ) -----
  # Menu types -> CONFIGURATION_MAIN, CONFIGURATION_QUESTS, CONFIGURATION_CATEGORY, CONFIGURATION_DIFFICULTY
+ # Button types -> 
  # Sounds are optional (just remove from configuration)
  GenericBackGroundItems:
   1:
@@ -109,6 +111,25 @@ messages:
      - "&7Click to configure categories"
     ButtonType: CATEGORY_CONFIGURE
     Slots: [ 23 ]
+    ClickSound: UI_BUTTON_CLICK
+    CloseOnClick: false
+
+ # # # # # # # # # # # # # # #
+ # CONFIGURE CATEGORY MENU   #
+ # # # # # # # # # # # # # # #
+ QuestConfigurationCategoryMenu:
+  Size: 45
+  Title: "Quest Configure Category"
+  OpenSound: ITEM_BOOK_PAGE_TURN
+  MenuType: CONFIGURATION_CATEGORY
+  GuiItems:
+   1:
+    Material: EMERALD
+    Name: "&a&l+"
+    Lore:
+     - "&7Create new category"
+    ButtonType: CATEGORY_ADD
+    Slots: [ 41 ]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
 

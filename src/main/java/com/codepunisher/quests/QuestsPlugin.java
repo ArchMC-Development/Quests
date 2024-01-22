@@ -1,8 +1,6 @@
 package com.codepunisher.quests;
 
 import com.codepunisher.quests.commands.QuestsCommand;
-import com.codepunisher.quests.commands.QuestSubCommandRegistrar;
-import com.codepunisher.quests.commands.QuestsSubCommandCache;
 import com.codepunisher.quests.commands.lib.CommandRegistrar;
 import com.codepunisher.quests.config.QuestsConfig;
 import fr.mrmicky.fastinv.FastInvManager;
@@ -14,14 +12,12 @@ public class QuestsPlugin extends JavaPlugin {
     QuestsConfig questsConfig = new QuestsConfig();
     questsConfig.reload(this);
 
-    QuestsSubCommandCache questsSubCommandCache = new QuestsSubCommandCache();
-    QuestSubCommandRegistrar questSubCommandRegistrar = new QuestSubCommandRegistrar(questsSubCommandCache, questsConfig);
-    questSubCommandRegistrar.register();
-
-    QuestsCommand questsCommand = new QuestsCommand(questsSubCommandCache, questsConfig);
-
+    QuestsCommand questsCommand = new QuestsCommand(this, questsConfig);
     CommandRegistrar commandRegistrar = new CommandRegistrar(this, questsConfig);
-    commandRegistrar.registerCommands(questsCommand, questsConfig.getQuestCommands().toArray(new String[0]));
+    questsConfig.getLanguageCommandMap().forEach((key, langCmd) -> {
+      commandRegistrar.registerCommands(
+              questsCommand, langCmd.getPrimaryCommands().toArray(new String[0]));
+    });
 
     FastInvManager.register(this);
   }

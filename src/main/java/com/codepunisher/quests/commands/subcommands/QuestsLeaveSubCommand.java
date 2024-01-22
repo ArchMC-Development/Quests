@@ -2,16 +2,14 @@ package com.codepunisher.quests.commands.subcommands;
 
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
+import com.codepunisher.quests.config.QuestsConfig;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.Consumer;
 
-public class QuestsLeaveSubCommand extends QuestsSubCommand {
-    public QuestsLeaveSubCommand(String command, String usage, String permission) {
-        super(command, usage, permission);
-    }
-
+public class QuestsLeaveSubCommand implements QuestsSubCommand {
     @Override
-    protected Consumer<CommandCall> getCommandCallConsumer() {
+    public Consumer<CommandCall> getCommandCallConsumer(JavaPlugin plugin, QuestsConfig questsConfig) {
         return call -> {
             call.asPlayer().sendMessage("leave");
         };

@@ -2,19 +2,16 @@ package com.codepunisher.quests.commands.subcommands;
 
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
+import com.codepunisher.quests.config.QuestsConfig;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.Consumer;
 
-public class QuestsMenuSubCommand extends QuestsSubCommand {
-    public QuestsMenuSubCommand(String command, String usage, String permission) {
-        super(command, usage, permission);
-    }
-
-    @Override
-    protected Consumer<CommandCall> getCommandCallConsumer() {
-        return call -> {
-            call.asPlayer().sendMessage("menu");
-        };
-    }
+public class QuestsMenuSubCommand implements QuestsSubCommand {
+  @Override
+  public Consumer<CommandCall> getCommandCallConsumer(JavaPlugin plugin, QuestsConfig questsConfig) {
+    return call -> {
+      call.asPlayer().sendMessage("menu");
+    };
+  }
 }
-

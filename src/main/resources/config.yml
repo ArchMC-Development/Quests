@@ -1,1 +1,26 @@
-lang: en.yml
+# Which languages should be cached?
+#
+# The following must be an existing
+# lang file in the "lang" folder
+lang:
+  - en.yml
+  - german.yml
+
+# # # # # # # # # #
+# COMMANDS        #
+# # # # # # # # # #
+commands:
+  ReloadSubCommand:
+    Permission: "quests.reload"
+  ConfigureSubCommand:
+    Permission: "quests.configure"
+  JoinSubCommand:
+    Permission: "quests.join"
+  LeaveSubCommand:
+    Permission: "quests.leave"
+  StatusSubCommand:
+    Permission: "quests.status"
+  MenuSubCommand:
+    Permission: "quests.menu"
+  LanguageSubCommand:
+    Permission: "quests.language"

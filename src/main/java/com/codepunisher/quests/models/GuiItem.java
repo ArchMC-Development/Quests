@@ -21,8 +21,7 @@ public class GuiItem {
   private final ButtonType buttonType;
   private final boolean closeOnClick;
 
-  @Nullable
-  private Sound clickSound;
+  @Nullable private Sound clickSound;
 
   public GuiItem(
       Material material,
@@ -43,14 +42,14 @@ public class GuiItem {
   }
 
   public GuiItem(
-          Material material,
-          String name,
-          List<String> lore,
-          List<String> menuTypes,
-          List<Integer> slots,
-          String buttonType,
-          boolean closeOnClick,
-          String clickSound) {
+      Material material,
+      String name,
+      List<String> lore,
+      List<String> menuTypes,
+      List<Integer> slots,
+      String buttonType,
+      boolean closeOnClick,
+      String clickSound) {
     this(material, name, lore, menuTypes, slots, buttonType, closeOnClick);
     this.clickSound = Sound.valueOf(clickSound.toUpperCase());
   }

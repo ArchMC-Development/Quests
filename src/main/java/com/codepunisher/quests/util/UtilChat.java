@@ -15,8 +15,7 @@ public class UtilChat {
     StringBuilder buffer = new StringBuilder();
 
     while (matcher.find()) {
-      String colorCode =
-          matcher.group(1).toLowerCase();
+      String colorCode = matcher.group(1).toLowerCase();
       matcher.appendReplacement(buffer, ChatColor.of("#" + colorCode).toString());
     }
 
