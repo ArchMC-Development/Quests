@@ -17,9 +17,9 @@ messages:
   ReloadSubCommand:
     Command: "reload"
     Usage: "reload quest configuration"
-  ConfigureSubCommand:
-    Command: "configure"
-    Usage: "configure quest system"
+  AddSubCommand:
+    Command: "add"
+    Usage: "add new quest"
   JoinSubCommand:
     Command: "join"
     Usage: "join a quest"

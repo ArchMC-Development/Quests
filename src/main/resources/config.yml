@@ -4,7 +4,6 @@
 # lang file in the "lang" folder
 lang:
   - en.yml
-  - german.yml
 
 # # # # # # # # # #
 # COMMANDS        #
@@ -12,8 +11,8 @@ lang:
 commands:
   ReloadSubCommand:
     Permission: "quests.reload"
-  ConfigureSubCommand:
-    Permission: "quests.configure"
+  AddSubCommand:
+    Permission: "quests.add"
   JoinSubCommand:
     Permission: "quests.join"
   LeaveSubCommand:
@@ -24,3 +23,10 @@ commands:
     Permission: "quests.menu"
   LanguageSubCommand:
     Permission: "quests.language"
+
+mysql:
+  Host: localhost
+  Port: 3306
+  Username: admin
+  Password: 123
+  Database: test

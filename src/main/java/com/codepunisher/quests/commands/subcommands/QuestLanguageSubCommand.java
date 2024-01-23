@@ -1,5 +1,6 @@
 package com.codepunisher.quests.commands.subcommands;
 
+import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
 import com.codepunisher.quests.config.QuestsConfig;
@@ -16,7 +17,7 @@ public class QuestLanguageSubCommand implements QuestsSubCommand {
     public static final Map<UUID, String> playerTempLanguageMap = new HashMap<>();
 
     @Override
-    public Consumer<CommandCall> getCommandCallConsumer(JavaPlugin plugin, QuestsConfig questsConfig) {
+    public Consumer<CommandCall> getCommandCallConsumer() {
         return call -> {
             Player player = call.asPlayer();
             String language = call.getArg(1);

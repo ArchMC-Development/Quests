@@ -1,5 +1,6 @@
 package com.codepunisher.quests.commands;
 
+import com.codepunisher.quests.cache.QuestSubCommandCache;
 import com.codepunisher.quests.commands.lib.Command;
 import com.codepunisher.quests.commands.lib.CommandArgument;
 import com.codepunisher.quests.commands.lib.CommandCall;
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
 public class QuestsCommand implements Consumer<TabDynamic> {
   private final JavaPlugin plugin;
   private final QuestsConfig questsConfig;
+  private final QuestSubCommandCache subCommandCache;
 
   @Command(
       label = "%s",
@@ -64,11 +66,12 @@ public class QuestsCommand implements Consumer<TabDynamic> {
                 return;
               }
 
-              subCommand
-                  .getType()
-                  .getQuestsSubCommand()
-                  .getCommandCallConsumer(plugin, questsConfig)
-                  .accept(call);
+              subCommandCache
+                  .getQuestSubCommand(subCommand.getType())
+                  .ifPresent(
+                      questSubCommand -> {
+                        questSubCommand.getCommandCallConsumer().accept(call);
+                      });
             }),
             () -> {
               player.sendMessage(UtilChat.colorize(questsConfig.getCommandDoesNotExist()));
@@ -94,11 +97,11 @@ public class QuestsCommand implements Consumer<TabDynamic> {
   }
 
   private String getLanguage(Player player) {
-      String language = QuestLanguageSubCommand.playerTempLanguageMap.get(player.getUniqueId());
-      if (language == null) {
-          return "en.yml";
-      }
+    String language = QuestLanguageSubCommand.playerTempLanguageMap.get(player.getUniqueId());
+    if (language == null) {
+      return "en.yml";
+    }
 
-      return language;
+    return language;
   }
 }

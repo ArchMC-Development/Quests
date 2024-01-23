@@ -4,6 +4,7 @@ import com.codepunisher.quests.models.CmdType;
 import com.codepunisher.quests.models.GuiInventory;
 import com.codepunisher.quests.models.GuiItem;
 import com.codepunisher.quests.models.LangCmd;
+import com.zaxxer.hikari.HikariConfig;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -13,10 +14,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+//TODO: Add permission for /quest??? Or not??? What happens if not op???
 //TODO: Menu configuration with multi-language support
 //TODO: Separate menu system between lang/config
 //TODO: Back button support
 //TODO: Async
+//
+//TODO: Implement quest type system (names, material, description, completion, etc)
+
+//TODO: Conditional tab complete (based on sub command (add a require previous sub command to an index tab completion?))
+//TODO: GUI or command -> /quest add id=%s type=%s association=%s min=%s max=%s permission=%s rewards=%s
+//TODO: GUI or command -> /quest remove <id> (what if is currently in use?)
 @Getter
 public class QuestsConfig {
   private static final String LANG_FOLDER_NAME = "lang/";
@@ -27,6 +35,9 @@ public class QuestsConfig {
   // Key -> language from file name
   // Value -> Language command object (all commands for language)
   private final Map<String, LangCmd> languageCommandMap = new HashMap<>();
+
+  // ----- ( DATABASE ) -----
+  private HikariConfig hikariConfig;
 
   // ----- ( MENU ) -----
   private List<GuiItem> backGroundItems;
@@ -45,11 +56,29 @@ public class QuestsConfig {
               new File(plugin.getDataFolder(), "config.yml"),
               Objects.requireNonNull(plugin.getResource("config.yml")));
 
+      loadHikariConfig(defaultConfig);
       loadAllMessageYamlIntoCache(defaultConfig, plugin);
     } catch (IOException e) {
       plugin.getLogger().severe("Error in yaml configuration " + e.getMessage());
       throw new RuntimeException(e);
     }
+  }
+
+  private void loadHikariConfig(YamlDocument defaultConfig) {
+    String host = defaultConfig.getString("mysql.Host");
+    String port = defaultConfig.getString("mysql.Port");
+    String username = defaultConfig.getString("mysql.Username");
+    String password = defaultConfig.getString("mysql.Password");
+    String database = defaultConfig.getString("mysql.Database");
+
+    Properties props = new Properties();
+    props.setProperty("dataSource.databaseName", database);
+
+    HikariConfig config = new HikariConfig(props);
+    config.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", host, port, username));
+    config.setPassword(password);
+
+    this.hikariConfig = config;
   }
 
   // Loads if it does not exist, pulls if already exists
