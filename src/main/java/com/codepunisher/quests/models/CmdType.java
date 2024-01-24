@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum CmdType {
   RELOAD("ReloadSubCommand"),
+  RESET("ResetSubCommand"),
   ADD("AddSubCommand"),
   JOIN("JoinSubCommand"),
   LEAVE("LeaveSubCommand"),

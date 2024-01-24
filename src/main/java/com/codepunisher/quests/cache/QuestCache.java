@@ -2,22 +2,41 @@ package com.codepunisher.quests.cache;
 
 import com.codepunisher.quests.models.Quest;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class QuestCache {
-    private final Map<String, Quest> questMap = new HashMap<>();
+  private final Map<String, Quest> allQuestMap = new HashMap<>();
+  private final Map<String, Integer> activeQuestsMap = new HashMap<>();
 
-    public void add(Quest quest) {
-        questMap.put(quest.getId(), quest);
-    }
+  public void add(Quest quest) {
+    allQuestMap.put(quest.getId(), quest);
+  }
 
-    public Optional<Quest> getQuest(String id) {
-        return Optional.ofNullable(questMap.get(id));
-    }
+  public void addActiveQuest(String id, int requirement) {
+    activeQuestsMap.put(id, requirement);
+  }
 
-    public void remove(String id) {
-        questMap.remove(id );
-    }
+  public Optional<Quest> getQuest(String id) {
+    return Optional.ofNullable(allQuestMap.get(id));
+  }
+
+  public Optional<Integer> getRequirement(String id) {
+    return Optional.ofNullable(activeQuestsMap.get(id));
+  }
+
+  public Collection<Quest> getQuests() {
+    return allQuestMap.values();
+  }
+
+  public Set<Map.Entry<String, Integer>> getActiveQuestsEntrySet() {
+    return activeQuestsMap.entrySet();
+  }
+
+  public void remove(String id) {
+    allQuestMap.remove(id);
+  }
+
+  public void removeAllActiveQuests() {
+    activeQuestsMap.clear();
+  }
 }

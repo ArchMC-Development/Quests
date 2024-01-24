@@ -17,6 +17,9 @@ messages:
   ReloadSubCommand:
     Command: "reload"
     Usage: "reload quest configuration"
+  ResetSubCommand:
+   Command: "reset"
+   Usage: "reset quest daily cycle"
   AddSubCommand:
     Command: "add"
     Usage: "add new quest"

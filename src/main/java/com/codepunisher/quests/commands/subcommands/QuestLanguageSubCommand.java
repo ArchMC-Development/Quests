@@ -1,12 +1,9 @@
 package com.codepunisher.quests.commands.subcommands;
 
-import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
-import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.util.UtilChat;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -11,6 +11,8 @@ lang:
 commands:
   ReloadSubCommand:
     Permission: "quests.reload"
+  ResetSubCommand:
+    Permission: "quests.reset"
   AddSubCommand:
     Permission: "quests.add"
   JoinSubCommand:
@@ -27,6 +29,6 @@ commands:
 mysql:
   Host: localhost
   Port: 3306
-  Username: admin
-  Password: 123
+  Username: codepunisher
+  Password: 1234
   Database: test

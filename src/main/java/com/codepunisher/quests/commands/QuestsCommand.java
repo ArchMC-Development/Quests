@@ -11,7 +11,6 @@ import com.codepunisher.quests.models.LangCmd;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Map;
 import java.util.Optional;
@@ -19,7 +18,6 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestsCommand implements Consumer<TabDynamic> {
-  private final JavaPlugin plugin;
   private final QuestsConfig questsConfig;
   private final QuestSubCommandCache subCommandCache;
 

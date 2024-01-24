@@ -71,11 +71,9 @@ public class QuestsConfig {
     String password = defaultConfig.getString("mysql.Password");
     String database = defaultConfig.getString("mysql.Database");
 
-    Properties props = new Properties();
-    props.setProperty("dataSource.databaseName", database);
-
-    HikariConfig config = new HikariConfig(props);
-    config.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", host, port, username));
+    HikariConfig config = new HikariConfig();
+    config.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", host, port, database));
+    config.setUsername(username);
     config.setPassword(password);
 
     this.hikariConfig = config;
