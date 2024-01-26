@@ -11,6 +11,7 @@ import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestDatabase;
 import com.codepunisher.quests.database.impl.QuestDatabaseImpl;
 import com.codepunisher.quests.listeners.PlayerJoinLeaveListener;
+import com.codepunisher.quests.listeners.QuestTrackingListener;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.redis.RedisPlayerData;
@@ -30,6 +31,7 @@ import redis.clients.jedis.JedisPool;
 
 // TODO: make quests work
 // TODO: randomize from (x) amount (rather than entire pool) to avoid same quests every day
+// TODO: allow for associations to be a randomized list (diamond_block,emerald_block,etc)
 // TODO: nested sub command tab completion
 // TODO: quest delete command
 // TODO: tests
@@ -116,6 +118,7 @@ public class QuestsPlugin extends JavaPlugin {
     // ----- ( LISTENER ) -----
     PluginManager pluginManager = getServer().getPluginManager();
     pluginManager.registerEvents(new PlayerJoinLeaveListener(playerCache, redisPlayerData), this);
+    pluginManager.registerEvents(new QuestTrackingListener(redisPlayerData, playerCache, questCache), this);
 
     // ----- ( FASTINV REGISTRY ) -----
     FastInvManager.register(this);

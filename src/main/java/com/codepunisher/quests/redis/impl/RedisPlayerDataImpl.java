@@ -31,10 +31,10 @@ public class RedisPlayerDataImpl implements RedisPlayerData {
             plugin,
             () -> {
               try (Jedis jedis = jedisPool.getResource()) {
-                  Set<String> keysToDelete = jedis.keys(JEDIS_PLAYER_DATA + ":*");
-                  if (!keysToDelete.isEmpty()) {
-                      jedis.del(keysToDelete.toArray(new String[0]));
-                  }
+                Set<String> keysToDelete = jedis.keys(JEDIS_PLAYER_DATA + ":*");
+                if (!keysToDelete.isEmpty()) {
+                  jedis.del(keysToDelete.toArray(new String[0]));
+                }
               } catch (Exception e) {
                 plugin
                     .getLogger()
@@ -42,6 +42,25 @@ public class RedisPlayerDataImpl implements RedisPlayerData {
                         String.format(
                             "Could not remove %s from redis %s",
                             JEDIS_PLAYER_DATA, e.getMessage()));
+              }
+            });
+  }
+
+  @Override
+  public void clear(UUID uuid) {
+    plugin
+        .getServer()
+        .getScheduler()
+        .runTaskAsynchronously(
+            plugin,
+            () -> {
+              try (Jedis jedis = jedisPool.getResource()) {
+                jedis.del(getKey(uuid));
+              } catch (Exception e) {
+                plugin
+                    .getLogger()
+                    .severe(
+                        String.format("Could not remove %s from redis %s", uuid, e.getMessage()));
               }
             });
   }

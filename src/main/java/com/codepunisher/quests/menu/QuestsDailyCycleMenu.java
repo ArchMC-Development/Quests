@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
 
+//TODO: Linked list or something to ensure quests display in the same order each time?
 public class QuestsDailyCycleMenu extends FastInv {
   private final QuestPlayerCache playerCache;
 

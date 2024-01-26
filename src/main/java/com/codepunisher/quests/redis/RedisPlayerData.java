@@ -9,6 +9,9 @@ public interface RedisPlayerData {
   /** Clears everything regarding player data in redis completely */
   void clear();
 
+  /** Clear specific player from redis */
+  void clear(UUID uuid);
+
   /** Loads player data from redis into the in memory local cache */
   void loadRedisDataIntoLocalCache(Player player);
 
