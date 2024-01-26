@@ -29,6 +29,6 @@ commands:
 mysql:
   Host: localhost
   Port: 3306
-  Username: codepunisher
-  Password: 1234
+  Username: root
+  Password: Feel4-Probation6-Untagged2-Slicing1
   Database: test

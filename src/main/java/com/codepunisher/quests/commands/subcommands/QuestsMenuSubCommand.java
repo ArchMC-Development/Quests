@@ -1,6 +1,7 @@
 package com.codepunisher.quests.commands.subcommands;
 
 import com.codepunisher.quests.cache.QuestCache;
+import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
 import com.codepunisher.quests.menu.QuestsDailyCycleMenu;
@@ -12,12 +13,13 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 public class QuestsMenuSubCommand implements QuestsSubCommand {
   private final QuestCache questCache;
+  private final QuestPlayerCache playerCache;
 
   @Override
   public Consumer<CommandCall> getCommandCallConsumer() {
     return call -> {
       Player player = call.asPlayer();
-      new QuestsDailyCycleMenu(questCache).open(player);
+      new QuestsDailyCycleMenu(player, questCache, playerCache).open(player);
     };
   }
 }

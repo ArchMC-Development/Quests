@@ -3,10 +3,11 @@ package com.codepunisher.quests.cache;
 import com.codepunisher.quests.models.Quest;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QuestCache {
-  private final Map<String, Quest> allQuestMap = new HashMap<>();
-  private final Map<String, Integer> activeQuestsMap = new HashMap<>();
+  private final Map<String, Quest> allQuestMap = new ConcurrentHashMap<>();
+  private final Map<String, Integer> activeQuestsMap = new ConcurrentHashMap<>();
 
   public void add(Quest quest) {
     allQuestMap.put(quest.getId(), quest);

@@ -4,18 +4,27 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Material;
 
-
 @Getter
 @AllArgsConstructor
 public enum QuestType {
   BLOCK_BREAK(Material.COBBLESTONE) {
+    @Override @SuppressWarnings("unchecked")
+    public <T> T getAssociationFromInput(String input) {
+      return (T) Material.valueOf(input.toUpperCase());
+    }
+
     @Override
-    public Class<?> getAssociationFromInput(String input) {
-      return Material.valueOf(input.toUpperCase()).getClass();
+    public <T> String getInputFromAssociatedObject(T object) {
+      if (object instanceof Material material) {
+        return material.name();
+      }
+      return null;
     }
   };
 
   private final Material defaultDisplay;
 
-  public abstract Class<?> getAssociationFromInput(String input);
+  public abstract <T> T getAssociationFromInput(String input);
+
+  public abstract <T> String getInputFromAssociatedObject(T object);
 }

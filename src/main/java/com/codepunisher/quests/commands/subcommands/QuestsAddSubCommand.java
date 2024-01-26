@@ -7,6 +7,7 @@ import com.codepunisher.quests.database.QuestDatabase;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.QuestType;
 import com.codepunisher.quests.util.UtilChat;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.message.MessageHandler;
@@ -20,6 +21,7 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
   private final QuestCache questCache;
   private final QuestDatabase questDatabase;
   private final ProtonManager proton;
+  private final Gson gson;
 
   @Override
   public Consumer<CommandCall> getCommandCallConsumer() {
@@ -27,6 +29,11 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
       Player player = call.asPlayer();
       try {
         String id = call.getArg(1).toLowerCase();
+        if (questCache.getQuest(id).isPresent()) {
+          player.sendMessage(UtilChat.colorize("&cThat quest id already exists!"));
+          return;
+        }
+
         QuestType questType = QuestType.valueOf(call.getArg(2).toUpperCase());
         Object associatedObject = questType.getAssociationFromInput(call.getArg(3));
         int min = Integer.parseInt(call.getArg(4));
@@ -39,10 +46,11 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
             new Quest(id, questType, associatedObject, min, max, permission, consoleCommandRewards);
         questCache.add(quest);
         questDatabase.insert(quest);
-        proton.broadcast("quest-plugin", "quest-add", quest);
+        proton.broadcast("quest-plugin", "quest-add", gson.toJson(quest));
         player.sendMessage(
             UtilChat.colorize("&aYour mom this totally works get fucking good kid: &f" + id));
-      } catch (RuntimeException ignored) {
+      } catch (RuntimeException e) {
+        e.getStackTrace();
         player.sendMessage(
             UtilChat.colorize(
                 "&cInvalid usage! Example -> /quest add <id> <type> <association> <min> <max> <permission> <console-command-rewards>"));
@@ -51,7 +59,7 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
   }
 
   @MessageHandler(namespace = "quest-plugin", subject = "quest-add")
-  public void onCacheUpdateReceive(Quest quest) {
-    questCache.add(quest);
+  public void onCacheUpdateReceive(String jsonQuest) {
+    questCache.add(gson.fromJson(jsonQuest, Quest.class));
   }
 }
