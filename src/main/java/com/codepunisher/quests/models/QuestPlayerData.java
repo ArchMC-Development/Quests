@@ -2,6 +2,7 @@ package com.codepunisher.quests.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.boss.BossBar;
 
 import java.util.HashSet;
 import java.util.Set;

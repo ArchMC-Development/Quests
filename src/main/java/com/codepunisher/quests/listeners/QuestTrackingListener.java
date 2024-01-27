@@ -11,22 +11,27 @@ import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @AllArgsConstructor
 public class QuestTrackingListener implements Listener {
+  private final Map<UUID, BossBar> bossBarMap = new HashMap<>();
+  private final JavaPlugin plugin;
   private final QuestPlayerCache playerCache;
   private final QuestCache questCache;
 
@@ -76,6 +81,11 @@ public class QuestTrackingListener implements Listener {
         player, QuestType.CRAFTING, event.getRecipe().getResult().getType(), recipeAmount);
   }
 
+  @EventHandler
+  public void onQuit(PlayerQuitEvent event) {
+    bossBarMap.remove(event.getPlayer().getUniqueId());
+  }
+
   private <T> void handleQuestProgressIncrease(
       Player player, QuestType questType, T associatedObject, int progressIncrease) {
     UUID uuid = player.getUniqueId();
@@ -110,6 +120,7 @@ public class QuestTrackingListener implements Listener {
 
     int requirement = requirementOptional.get();
     playerData.incrementQuestProgress(progressIncrease);
+    displayBossBarProgress(player, playerData);
 
     // Quest completion
     int progress = playerData.getCurrentQuestProgress();
@@ -125,7 +136,8 @@ public class QuestTrackingListener implements Listener {
               });
 
       // Checking if they've completed all daily quests (new rewards)
-      if (playerData.getCompletedDailyQuests().size() >= questCache.getActiveQuestsEntrySet().size()) {
+      if (playerData.getCompletedDailyQuests().size()
+          >= questCache.getActiveQuestsEntrySet().size()) {
         player.sendMessage(UtilChat.colorize("&aOmg you totally completed all quests!"));
         player.getInventory().addItem(new ItemStack(Material.DIAMOND_BLOCK, 64));
       }
@@ -136,6 +148,42 @@ public class QuestTrackingListener implements Listener {
             String.format(
                 "&aTotal broken for quest: &8(&f%s&7/&f%s&8)",
                 Math.min(progress, requirement), requirement)));
+  }
+
+  /**
+   * Displays current progress on player boss bar object and goes away after a few seconds. This is
+   * working with the boss bar map
+   */
+  private void displayBossBarProgress(Player player, QuestPlayerData playerData) {
+    UUID uuid = player.getUniqueId();
+
+    // Removing previous boss bar
+    BossBar bossBar = bossBarMap.get(uuid);
+    if (bossBar != null) {
+      bossBar.removePlayer(player);
+    }
+
+    // Creating new boss bar/displaying
+    BossBar newBossBar = Bukkit.createBossBar(
+            UtilChat.colorize("&a" + playerData.getCurrentQuestId()),
+            BarColor.GREEN,
+            BarStyle.SOLID);
+
+    newBossBar.addPlayer(player);
+    newBossBar.setVisible(true);
+    bossBarMap.put(uuid, newBossBar);
+
+    questCache.getRequirement(playerData.getCurrentQuestId()).ifPresent(requirement -> {
+      int currentProgress = playerData.getCurrentQuestProgress();
+      double completionPercentage = (double) currentProgress / requirement;
+      double normalizedProgress = Math.min(1.0, Math.max(0.0, completionPercentage));
+      newBossBar.setProgress(normalizedProgress);
+    });
+
+    // Removing after 3 seconds (if not already removed)
+    plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+      newBossBar.removePlayer(player);
+    }, 60L);
   }
 
   private int getMaxCraftAmount(CraftingInventory inv) {
