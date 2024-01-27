@@ -169,7 +169,6 @@ public class QuestTrackingListener implements Listener {
             BarColor.GREEN,
             BarStyle.SOLID);
 
-    newBossBar.addPlayer(player);
     newBossBar.setVisible(true);
     bossBarMap.put(uuid, newBossBar);
 
@@ -179,6 +178,8 @@ public class QuestTrackingListener implements Listener {
       double normalizedProgress = Math.min(1.0, Math.max(0.0, completionPercentage));
       newBossBar.setProgress(normalizedProgress);
     });
+
+    newBossBar.addPlayer(player);
 
     // Removing after 3 seconds (if not already removed)
     plugin.getServer().getScheduler().runTaskLater(plugin, () -> {

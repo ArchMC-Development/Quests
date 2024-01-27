@@ -36,7 +36,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
-// TODO: progress bar or boss bar???
 // TODO: Add logging throughout the plugin when things happen
 // TODO: configurations (async)
 // TODO: clean code where can (clean main class?)
