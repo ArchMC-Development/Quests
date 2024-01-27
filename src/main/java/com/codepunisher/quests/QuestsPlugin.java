@@ -30,6 +30,7 @@ import fr.mrmicky.fastinv.FastInvManager;
 import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.ProtonProvider;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
@@ -139,6 +140,15 @@ public class QuestsPlugin extends JavaPlugin {
                   for (String line : lines) {
                     if (line.contains("[test]")) {
                       event.getPlayer().sendMessage("Test test 123");
+                      Location signLocation =
+                          event
+                              .getPacket()
+                              .getBlockPositionModifier()
+                              .read(0)
+                              .toLocation(Bukkit.getWorlds().get(0));
+                      event
+                          .getPlayer()
+                          .sendSignChange(signLocation, new String[] { "bloop blarp" });
                       break;
                     }
                   }
