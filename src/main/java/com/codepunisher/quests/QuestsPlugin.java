@@ -19,6 +19,10 @@ import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.redis.impl.RedisActiveQuestsImpl;
 import com.codepunisher.quests.redis.impl.RedisPlayerDataImpl;
 import com.codepunisher.quests.tasks.RedisPlayerDataSaveTask;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zaxxer.hikari.HikariDataSource;
@@ -30,10 +34,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
-// TODO: placeholderapi/api
-// TODO: double check requirements
-// TODO: reward for completing all?
 // TODO: signshit
+// TODO: progress bar or boss bar???
 // TODO: configurations (async)
 // TODO: clean code where can (clean main class?)
 // TODO: tests
@@ -114,7 +116,7 @@ public class QuestsPlugin extends JavaPlugin {
     // ----- ( LISTENER ) -----
     PluginManager pluginManager = getServer().getPluginManager();
     pluginManager.registerEvents(
-        new PlayerJoinLeaveListener(questCache, playerCache, redisPlayerData), this);
+        new PlayerJoinLeaveListener(this, questCache, playerCache, redisPlayerData), this);
     pluginManager.registerEvents(new QuestTrackingListener(playerCache, questCache), this);
 
     // ----- ( FASTINV REGISTRY ) -----
@@ -124,6 +126,24 @@ public class QuestsPlugin extends JavaPlugin {
     if (pluginManager.isPluginEnabled("PlaceholderAPI")) {
       new QuestsExpansion(questCache, playerCache).register();
       getLogger().info("PlaceholderAPI expansion successfully registered!");
+    }
+
+    if (pluginManager.isPluginEnabled("ProtocolLib")) {
+      ProtocolLibrary.getProtocolManager()
+          .addPacketListener(
+              new PacketAdapter(this, PacketType.Play.Client.UPDATE_SIGN) {
+                @Override
+                public void onPacketReceiving(PacketEvent event) {
+                  // Check if the sign text contains [test]
+                  String[] lines = event.getPacket().getStringArrays().read(0);
+                  for (String line : lines) {
+                    if (line.contains("[test]")) {
+                      event.getPlayer().sendMessage("Test test 123");
+                      break;
+                    }
+                  }
+                }
+              });
     }
   }
 

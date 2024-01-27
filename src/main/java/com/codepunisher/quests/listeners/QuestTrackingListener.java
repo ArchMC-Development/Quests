@@ -9,6 +9,7 @@ import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -122,6 +123,12 @@ public class QuestTrackingListener implements Listener {
                 Bukkit.dispatchCommand(
                     Bukkit.getConsoleSender(), reward.replaceAll("%player%", player.getName()));
               });
+
+      // Checking if they've completed all daily quests (new rewards)
+      if (playerData.getCompletedDailyQuests().size() >= questCache.getActiveQuestsEntrySet().size()) {
+        player.sendMessage(UtilChat.colorize("&aOmg you totally completed all quests!"));
+        player.getInventory().addItem(new ItemStack(Material.DIAMOND_BLOCK, 64));
+      }
     }
 
     player.sendActionBar(

@@ -14,17 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-//TODO: Add permission for /quest??? Or not??? What happens if not op???
-//TODO: Menu configuration with multi-language support
-//TODO: Separate menu system between lang/config
-//TODO: Back button support
-//TODO: Async
-//
-//TODO: Implement quest type system (names, material, description, completion, etc)
-
-//TODO: Conditional tab complete (based on sub command (add a require previous sub command to an index tab completion?))
-//TODO: GUI or command -> /quest add id=%s type=%s association=%s min=%s max=%s permission=%s rewards=%s
-//TODO: GUI or command -> /quest remove <id> (what if is currently in use?)
 @Getter
 public class QuestsConfig {
   private static final String LANG_FOLDER_NAME = "lang/";
@@ -44,10 +33,14 @@ public class QuestsConfig {
   private GuiInventory configurationInventory;
   private GuiInventory configurationEditCategoryInventory;
 
-  // ----- ( GENERAL MESSAGES/SETTINGS ) -----
+  // ----- ( GENERAL MESSAGES ) -----
   private String commandDoesNotExist;
   private String noPermission;
   private String noConsole;
+
+  // ----- ( GENERAL CONFIGURATIONS ) -----
+//  private List<String> completingAllActiveQuestsMessage;
+//  private List<String> completingAllActiveQuestsRewards;
   private boolean displayMenuWhenNoArguments;
 
   public void reload(JavaPlugin plugin) {
@@ -67,6 +60,8 @@ public class QuestsConfig {
   }
 
   private void loadGenericConfigSettings(YamlDocument defaultConfig) {
+//    completingAllActiveQuestsMessage = defaultConfig.getStringList("CompletingAllActiveQuestsMessage");
+//    completingAllActiveQuestsRewards = defaultConfig.getStringList("CompletingAllActiveQuestsRewards");
     displayMenuWhenNoArguments = defaultConfig.getBoolean("DisplayMenuWhenNoArguments");
   }
 

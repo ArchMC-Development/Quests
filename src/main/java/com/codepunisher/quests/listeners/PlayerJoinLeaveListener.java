@@ -2,6 +2,7 @@ package com.codepunisher.quests.listeners;
 
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
+import com.codepunisher.quests.models.QuestPlayerData;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
@@ -10,11 +11,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
 @AllArgsConstructor
 public class PlayerJoinLeaveListener implements Listener {
+  private final JavaPlugin plugin;
   private final QuestCache questCache;
   private final QuestPlayerCache playerCache;
   private final RedisPlayerData redisPlayerData;
@@ -22,8 +25,25 @@ public class PlayerJoinLeaveListener implements Listener {
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
     Player player = event.getPlayer();
-    removeQuestFromPlayerIfNoLongerExists(player);
-    redisPlayerData.loadRedisDataIntoLocalCache(player);
+    redisPlayerData
+        .loadRedisDataIntoLocalCache(player)
+        .thenRun(
+            () -> {
+              plugin
+                  .getServer()
+                  .getScheduler()
+                  .runTask(
+                      plugin,
+                      () -> {
+                        playerCache
+                            .get(player.getUniqueId())
+                            .ifPresent(
+                                playerData -> {
+                                  removeQuestFromPlayerIfNoLongerExists(player, playerData);
+                                  sendCurrentQuestData(player, playerData);
+                                });
+                      });
+            });
   }
 
   @EventHandler
@@ -38,19 +58,23 @@ public class PlayerJoinLeaveListener implements Listener {
             });
   }
 
-  private void removeQuestFromPlayerIfNoLongerExists(Player player) {
-    playerCache
-        .get(player.getUniqueId())
+  private void removeQuestFromPlayerIfNoLongerExists(Player player, QuestPlayerData playerData) {
+    boolean questWasRemoved =
+        questCache.getQuest(playerData.getCurrentQuestId()).isEmpty()
+            && !playerData.getCurrentQuestId().isEmpty();
+    if (questWasRemoved) {
+      playerData.optOutOfCurrentQuestId();
+      player.sendMessage(
+          UtilChat.colorize("&cThe quest you were in has been deleted by an admin!"));
+    }
+  }
+
+  private void sendCurrentQuestData(Player player, QuestPlayerData playerData) {
+    questCache
+        .getQuest(playerData.getCurrentQuestId())
         .ifPresent(
-            playerData -> {
-              boolean questWasRemoved =
-                  questCache.getQuest(playerData.getCurrentQuestId()).isEmpty()
-                      && !playerData.getCurrentQuestId().isEmpty();
-              if (questWasRemoved) {
-                playerData.optOutOfCurrentQuestId();
-                player.sendMessage(
-                    UtilChat.colorize("&cThe quest you were in has been deleted by an admin!"));
-              }
+            quest -> {
+              player.sendMessage(UtilChat.colorize("&aYour current quest: " + quest.getId()));
             });
   }
 }

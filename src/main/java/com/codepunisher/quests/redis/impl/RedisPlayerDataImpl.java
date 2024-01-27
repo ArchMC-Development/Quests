@@ -66,31 +66,27 @@ public class RedisPlayerDataImpl implements RedisPlayerData {
   }
 
   @Override
-  public void loadRedisDataIntoLocalCache(Player player) {
-    plugin
-        .getServer()
-        .getScheduler()
-        .runTaskAsynchronously(
-            plugin,
-            () -> {
-              try (Jedis jedis = jedisPool.getResource()) {
-                UUID uuid = player.getUniqueId();
-                String redisValue = jedis.get(getKey(uuid));
-                if (redisValue == null) {
-                  return;
-                }
+  public CompletableFuture<Void> loadRedisDataIntoLocalCache(Player player) {
+    return CompletableFuture.runAsync(
+        () -> {
+          try (Jedis jedis = jedisPool.getResource()) {
+            UUID uuid = player.getUniqueId();
+            String redisValue = jedis.get(getKey(uuid));
+            if (redisValue == null) {
+              return;
+            }
 
-                QuestPlayerData playerData = gson.fromJson(redisValue, QuestPlayerData.class);
-                playerCache.add(uuid, playerData);
-              } catch (Exception e) {
-                plugin
-                    .getLogger()
-                    .severe(
-                        String.format(
-                            "Error pulling data from Redis for %s %s: ",
-                            player.getName(), e.getMessage()));
-              }
-            });
+            QuestPlayerData playerData = gson.fromJson(redisValue, QuestPlayerData.class);
+            playerCache.add(uuid, playerData);
+          } catch (Exception e) {
+            plugin
+                .getLogger()
+                .severe(
+                    String.format(
+                        "Error pulling data from Redis for %s %s: ",
+                        player.getName(), e.getMessage()));
+          }
+        });
   }
 
   @Override
