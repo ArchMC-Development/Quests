@@ -44,10 +44,11 @@ public class QuestsConfig {
   private GuiInventory configurationInventory;
   private GuiInventory configurationEditCategoryInventory;
 
-  // ----- ( GENERAL MESSAGES ) -----
+  // ----- ( GENERAL MESSAGES/SETTINGS ) -----
   private String commandDoesNotExist;
   private String noPermission;
   private String noConsole;
+  private boolean displayMenuWhenNoArguments;
 
   public void reload(JavaPlugin plugin) {
     try {
@@ -56,12 +57,17 @@ public class QuestsConfig {
               new File(plugin.getDataFolder(), "config.yml"),
               Objects.requireNonNull(plugin.getResource("config.yml")));
 
+      loadGenericConfigSettings(defaultConfig);
       loadHikariConfig(defaultConfig);
       loadAllMessageYamlIntoCache(defaultConfig, plugin);
     } catch (IOException e) {
       plugin.getLogger().severe("Error in yaml configuration " + e.getMessage());
       throw new RuntimeException(e);
     }
+  }
+
+  private void loadGenericConfigSettings(YamlDocument defaultConfig) {
+    displayMenuWhenNoArguments = defaultConfig.getBoolean("DisplayMenuWhenNoArguments");
   }
 
   private void loadHikariConfig(YamlDocument defaultConfig) {

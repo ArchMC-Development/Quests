@@ -1,6 +1,7 @@
 package com.codepunisher.quests.redis.impl;
 
 import com.codepunisher.quests.cache.QuestCache;
+import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import lombok.AllArgsConstructor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,6 +36,29 @@ public class RedisActiveQuestsImpl implements RedisActiveQuests {
                         String.format(
                             "Could not remove %s from redis %s",
                             JEDIS_DAILY_QUEST_CYCLE, e.getMessage()));
+              }
+            });
+  }
+
+  @Override
+  public void removeQuest(Quest quest) {
+    plugin
+        .getServer()
+        .getScheduler()
+        .runTaskAsynchronously(
+            plugin,
+            () -> {
+              try (Jedis jedis = jedisPool.getResource()) {
+                long removed = jedis.hdel(JEDIS_DAILY_QUEST_CYCLE, quest.getId());
+                if (removed > 0) {
+                  plugin.getLogger().info("Quest removed from Redis hash!");
+                } else {
+                  plugin.getLogger().warning("Quest not found in Redis hash!");
+                }
+              } catch (Exception e) {
+                plugin
+                    .getLogger()
+                    .severe("Error when removing quest from Redis: " + e.getMessage());
               }
             });
   }

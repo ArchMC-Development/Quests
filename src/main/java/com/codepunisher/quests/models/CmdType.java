@@ -9,8 +9,7 @@ public enum CmdType {
   RELOAD("ReloadSubCommand"),
   RESET("ResetSubCommand"),
   ADD("AddSubCommand"),
-  JOIN("JoinSubCommand"),
-  LEAVE("LeaveSubCommand"),
+  DELETE("DeleteSubCommand"),
   STATUS("StatusSubCommand"),
   MENU("MenuSubCommand"),
   LANGUAGE("LanguageSubCommand");

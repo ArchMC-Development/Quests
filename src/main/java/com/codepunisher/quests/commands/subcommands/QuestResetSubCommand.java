@@ -4,6 +4,7 @@ import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
+import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,8 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
-public class QuestResetDailySubCommand implements QuestsSubCommand {
+public class QuestResetSubCommand implements QuestsSubCommand {
+  private static final int RANDOMIZE_POOL_AMOUNT = 3;
   private final RedisActiveQuests redisActiveQuests;
   private final RedisPlayerData redisPlayerData;
   private final QuestCache questCache;
@@ -52,13 +54,17 @@ public class QuestResetDailySubCommand implements QuestsSubCommand {
 
   private void randomizeValuesForEachQuestAndCacheAsActive() {
     Random random = new Random();
-    questCache
-        .getQuests()
-        .forEach(
-            quest -> {
-              int randomRequirement =
-                  random.nextInt((quest.getMax() - quest.getMin()) + 1) + quest.getMin();
-              questCache.addActiveQuest(quest.getId(), randomRequirement);
-            });
+    int counter = 0;
+    for (Quest quest : questCache.getQuests()) {
+      if (counter >= RANDOMIZE_POOL_AMOUNT) {
+        break;
+      }
+
+      int randomRequirement =
+          random.nextInt((quest.getMax() - quest.getMin()) + 1) + quest.getMin();
+      questCache.addActiveQuest(quest.getId(), randomRequirement);
+
+      counter++;
+    }
   }
 }

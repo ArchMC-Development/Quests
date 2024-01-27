@@ -23,12 +23,9 @@ messages:
   AddSubCommand:
     Command: "add"
     Usage: "add new quest"
-  JoinSubCommand:
-    Command: "join"
-    Usage: "join a quest"
-  LeaveSubCommand:
-    Command: "leave"
-    Usage: "leave a quest"
+  DeleteSubCommand:
+   Command: "delete"
+   Usage: "delete quest"
   StatusSubCommand:
     Command: "status"
     Usage: "view status of a joined quest"

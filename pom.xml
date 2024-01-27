@@ -143,12 +143,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.MilkBowl</groupId>
-      <artifactId>VaultAPI</artifactId>
-      <version>1.7</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>fr.mrmicky</groupId>
       <artifactId>FastInv</artifactId>
       <version>3.0.4</version>

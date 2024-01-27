@@ -5,7 +5,7 @@ import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.QuestPlayerData;
 import com.codepunisher.quests.models.QuestType;
-import com.codepunisher.quests.redis.RedisPlayerData;
+import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
@@ -14,7 +14,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -22,24 +26,57 @@ import java.util.UUID;
 
 @AllArgsConstructor
 public class QuestTrackingListener implements Listener {
-  private final RedisPlayerData redisPlayerData;
   private final QuestPlayerCache playerCache;
   private final QuestCache questCache;
 
-  // TODO: (stop players from re-joining)
   @EventHandler
   public void onBreak(BlockBreakEvent event) {
-    handleQuestProgressIncrease(event.getPlayer(), QuestType.BLOCK_BREAK, event.getBlock().getType());
+    handleQuestProgressIncrease(
+        event.getPlayer(), QuestType.BLOCK_BREAK, event.getBlock().getType(), 1);
   }
 
   @EventHandler
   public void onCraft(CraftItemEvent event) {
+    ItemStack test = event.getRecipe().getResult().clone();
+    ClickType click = event.getClick();
+
+    int recipeAmount = test.getAmount();
+    switch (click) {
+      case NUMBER_KEY:
+        if (event.getWhoClicked().getInventory().getItem(event.getHotbarButton()) != null)
+          recipeAmount = 0;
+        break;
+
+      case DROP:
+      case CONTROL_DROP:
+        ItemStack cursor = event.getCursor();
+        if (!ItemBuilder.isAir(cursor)) recipeAmount = 0;
+        break;
+
+      case SHIFT_RIGHT:
+      case SHIFT_LEFT:
+        if (recipeAmount == 0) break;
+
+        int maxCraftable = getMaxCraftAmount(event.getInventory());
+        int capacity = fits(test, event.getView().getBottomInventory());
+        if (capacity < maxCraftable)
+          maxCraftable = ((capacity + recipeAmount - 1) / recipeAmount) * recipeAmount;
+
+        recipeAmount = maxCraftable;
+        break;
+      default:
+    }
+
+    // No use continuing if we haven't actually crafted a thing
+    if (recipeAmount == 0) return;
+
     Player player = (Player) event.getWhoClicked();
-    handleQuestProgressIncrease(player, QuestType.CRAFTING, event.getRecipe().getResult().getType());
+    handleQuestProgressIncrease(
+        player, QuestType.CRAFTING, event.getRecipe().getResult().getType(), recipeAmount);
   }
 
   private <T> void handleQuestProgressIncrease(
-      Player player, QuestType questType, T associatedObject) {
+      Player player, QuestType questType, T associatedObject, int progressIncrease) {
     UUID uuid = player.getUniqueId();
     Optional<QuestPlayerData> playerDataOptional = playerCache.get(uuid);
     if (playerDataOptional.isEmpty()) {
@@ -71,17 +108,14 @@ public class QuestTrackingListener implements Listener {
     }
 
     int requirement = requirementOptional.get();
-    playerData.incrementQuestProgress(1);
+    playerData.incrementQuestProgress(progressIncrease);
 
     // Quest completion
     int progress = playerData.getCurrentQuestProgress();
     if (progress >= requirement) {
       player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.75f, 1.75f);
       player.sendTitle(UtilChat.colorize("&aQuest Complete"), UtilChat.colorize("good job!!!"));
-
-      redisPlayerData.clear(uuid);
-      playerCache.remove(uuid);
-
+      playerData.setCurrentQuestIdAsCompleted();
       Arrays.stream(quest.getRewards())
           .forEach(
               reward -> {
@@ -92,6 +126,31 @@ public class QuestTrackingListener implements Listener {
 
     player.sendActionBar(
         UtilChat.colorize(
-            String.format("&aTotal broken for quest: &8(&f%s&7/&f%s&8)", progress, requirement)));
+            String.format(
+                "&aTotal broken for quest: &8(&f%s&7/&f%s&8)",
+                Math.min(progress, requirement), requirement)));
+  }
+
+  private int getMaxCraftAmount(CraftingInventory inv) {
+    if (inv.getResult() == null) return 0;
+
+    int resultCount = inv.getResult().getAmount();
+    int materialCount = Integer.MAX_VALUE;
+
+    for (ItemStack is : inv.getMatrix())
+      if (is != null && is.getAmount() < materialCount) materialCount = is.getAmount();
+
+    return resultCount * materialCount;
+  }
+
+  private int fits(ItemStack stack, Inventory inv) {
+    ItemStack[] contents = inv.getContents();
+    int result = 0;
+
+    for (ItemStack is : contents)
+      if (is == null) result += stack.getMaxStackSize();
+      else if (is.isSimilar(stack)) result += Math.max(stack.getMaxStackSize() - is.getAmount(), 0);
+
+    return result;
   }
 }

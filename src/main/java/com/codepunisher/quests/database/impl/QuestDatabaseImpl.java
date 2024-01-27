@@ -91,6 +91,44 @@ public class QuestDatabaseImpl implements QuestDatabase {
   }
 
   @Override
+  public void remove(Quest quest) {
+    plugin
+        .getServer()
+        .getScheduler()
+        .runTaskAsynchronously(
+            plugin,
+            () -> {
+              try (Connection connection = hikariDataSource.getConnection()) {
+                String removeQuery = "DELETE FROM quests WHERE id = ?";
+
+                try (PreparedStatement preparedStatement =
+                    connection.prepareStatement(removeQuery)) {
+                  preparedStatement.setString(1, quest.getId());
+
+                  int affectedRows = preparedStatement.executeUpdate();
+                  if (affectedRows > 0) {
+                    plugin.getLogger().info("Quest successfully removed from the database!");
+                  } else {
+                    plugin.getLogger().warning("Quest not found in the database!");
+                  }
+                } catch (SQLException e) {
+                  plugin
+                      .getLogger()
+                      .severe(
+                          "Error when removing quest from the database! "
+                              + Arrays.toString(e.getStackTrace()));
+                }
+              } catch (SQLException e) {
+                plugin
+                    .getLogger()
+                    .severe(
+                        "Error when removing quest from the database! "
+                            + Arrays.toString(e.getStackTrace()));
+              }
+            });
+  }
+
+  @Override
   public CompletableFuture<List<Quest>> getAllQuests() {
     CompletableFuture<List<Quest>> future = new CompletableFuture<>();
 

@@ -212,4 +212,8 @@ public class ItemBuilder {
     public static ItemBuilder of(Material material) {
         return new ItemBuilder(material);
     }
+
+    public static boolean isAir(ItemStack stack) {
+        return stack == null || stack.getType() == Material.AIR;
+    }
 }

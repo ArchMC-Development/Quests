@@ -29,19 +29,14 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
-// TODO: make quests work
-// TODO: randomize from (x) amount (rather than entire pool) to avoid same quests every day
-// TODO: allow for associations to be a randomized list (diamond_block,emerald_block,etc)
-// TODO: nested sub command tab completion
-// TODO: quest delete command
-// TODO: tests
-// TODO: configurations (async)
-// TODO: placeholderapi
-// TODO: signshit
-// TODO: make look pretty
+// TODO: placeholderapi/api
 // TODO: double check requirements
 // TODO: reward for completing all?
+// TODO: signshit
+// TODO: configurations (async)
 // TODO: clean code where can (clean main class?)
+// TODO: tests
+// TODO: make look pretty
 // TODO: remove unnecessary shades/dependencies
 // TODO: put on github (pretty read me) and a jar file
 public class QuestsPlugin extends JavaPlugin {
@@ -117,8 +112,8 @@ public class QuestsPlugin extends JavaPlugin {
 
     // ----- ( LISTENER ) -----
     PluginManager pluginManager = getServer().getPluginManager();
-    pluginManager.registerEvents(new PlayerJoinLeaveListener(playerCache, redisPlayerData), this);
-    pluginManager.registerEvents(new QuestTrackingListener(redisPlayerData, playerCache, questCache), this);
+    pluginManager.registerEvents(new PlayerJoinLeaveListener(questCache, playerCache, redisPlayerData), this);
+    pluginManager.registerEvents(new QuestTrackingListener(playerCache, questCache), this);
 
     // ----- ( FASTINV REGISTRY ) -----
     FastInvManager.register(this);

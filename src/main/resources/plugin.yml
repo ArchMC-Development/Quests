@@ -3,5 +3,5 @@ version: ${project.version}
 author: CodePunisher
 main: com.codepunisher.quests.QuestsPlugin
 depend: [ Proton ]
-softdepend: [ PlaceholderAPI, ProtocolLib, Vault ]
+softdepend: [ PlaceholderAPI, ProtocolLib ]
 api-version: 1.20

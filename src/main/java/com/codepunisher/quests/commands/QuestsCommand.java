@@ -7,6 +7,7 @@ import com.codepunisher.quests.commands.lib.CommandCall;
 import com.codepunisher.quests.commands.lib.TabDynamic;
 import com.codepunisher.quests.commands.subcommands.QuestLanguageSubCommand;
 import com.codepunisher.quests.config.QuestsConfig;
+import com.codepunisher.quests.models.CmdType;
 import com.codepunisher.quests.models.LangCmd;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
@@ -31,28 +32,32 @@ public class QuestsCommand implements Consumer<TabDynamic> {
     LangCmd langCmd = questsConfig.getLanguageCommandMap().get(language);
 
     if (call.hasNoArgs()) {
-      langCmd
-          .getQuestCommandsViewList()
-          .forEach(
-              s -> {
-                // Replacing the line with sub commands display
-                if (s.contains("%subcommands%")) {
-                  langCmd
-                      .getSubCommands()
-                      .forEach(
-                          (cmd, subCommand) -> {
-                            String display =
-                                langCmd
-                                    .getQuestSubCommandView()
-                                    .replaceAll("%1%", call.getName())
-                                    .replaceAll("%2%", cmd)
-                                    .replaceAll("%3%", subCommand.getUsage());
-                            player.sendMessage(UtilChat.colorize(display));
-                          });
-                } else {
-                  player.sendMessage(UtilChat.colorize(s));
-                }
-              });
+      if (questsConfig.isDisplayMenuWhenNoArguments()) {
+        executeSubCommand(CmdType.MENU, call);
+      } else {
+        langCmd
+            .getQuestCommandsViewList()
+            .forEach(
+                s -> {
+                  // Replacing the line with sub commands display
+                  if (s.contains("%subcommands%")) {
+                    langCmd
+                        .getSubCommands()
+                        .forEach(
+                            (cmd, subCommand) -> {
+                              String display =
+                                  langCmd
+                                      .getQuestSubCommandView()
+                                      .replaceAll("%1%", call.getName())
+                                      .replaceAll("%2%", cmd)
+                                      .replaceAll("%3%", subCommand.getUsage());
+                              player.sendMessage(UtilChat.colorize(display));
+                            });
+                  } else {
+                    player.sendMessage(UtilChat.colorize(s));
+                  }
+                });
+      }
       return;
     }
 
@@ -64,12 +69,7 @@ public class QuestsCommand implements Consumer<TabDynamic> {
                 return;
               }
 
-              subCommandCache
-                  .getQuestSubCommand(subCommand.getType())
-                  .ifPresent(
-                      questSubCommand -> {
-                        questSubCommand.getCommandCallConsumer().accept(call);
-                      });
+              executeSubCommand(subCommand.getType(), call);
             }),
             () -> {
               player.sendMessage(UtilChat.colorize(questsConfig.getCommandDoesNotExist()));
@@ -101,5 +101,14 @@ public class QuestsCommand implements Consumer<TabDynamic> {
     }
 
     return language;
+  }
+
+  private void executeSubCommand(CmdType cmdType, CommandCall call) {
+    subCommandCache
+        .getQuestSubCommand(cmdType)
+        .ifPresent(
+            questSubCommand -> {
+              questSubCommand.getCommandCallConsumer().accept(call);
+            });
   }
 }

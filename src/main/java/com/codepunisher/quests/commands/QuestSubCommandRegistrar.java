@@ -24,20 +24,24 @@ public class QuestSubCommandRegistrar {
   private final Gson gson;
 
   public void register() {
-    questSubCommandCache.add(CmdType.RELOAD, new QuestsReloadCommand());
-
-    QuestResetDailySubCommand questsResetSubCommand =
-        new QuestResetDailySubCommand(redisActiveQuests, redisPlayerData, questCache, playerCache, proton);
+    QuestResetSubCommand questsResetSubCommand =
+        new QuestResetSubCommand(
+            redisActiveQuests, redisPlayerData, questCache, playerCache, proton);
     proton.registerMessageHandlers(questsResetSubCommand);
 
     QuestsAddSubCommand questsAddSubCommand =
         new QuestsAddSubCommand(questCache, questDatabase, proton, gson);
     proton.registerMessageHandlers(questsAddSubCommand);
 
+    QuestDeleteSubCommand questDeleteSubCommand =
+        new QuestDeleteSubCommand(
+            questDatabase, redisActiveQuests, questCache, playerCache, proton);
+    proton.registerMessageHandlers(questDeleteSubCommand);
+
+    questSubCommandCache.add(CmdType.RELOAD, new QuestsReloadCommand());
     questSubCommandCache.add(CmdType.ADD, questsAddSubCommand);
+    questSubCommandCache.add(CmdType.DELETE, questDeleteSubCommand);
     questSubCommandCache.add(CmdType.RESET, questsResetSubCommand);
-    questSubCommandCache.add(CmdType.JOIN, new QuestsJoinSubCommand());
-    questSubCommandCache.add(CmdType.LEAVE, new QuestsLeaveSubCommand());
     questSubCommandCache.add(CmdType.STATUS, new QuestsStatusSubCommand());
     questSubCommandCache.add(CmdType.MENU, new QuestsMenuSubCommand(questCache, playerCache));
     questSubCommandCache.add(CmdType.LANGUAGE, new QuestLanguageSubCommand());

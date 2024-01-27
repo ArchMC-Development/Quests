@@ -37,6 +37,10 @@ public class QuestCache {
     allQuestMap.remove(id);
   }
 
+  public void removeActiveQuest(String id) {
+    activeQuestsMap.remove(id);
+  }
+
   public void removeAllActiveQuests() {
     activeQuestsMap.clear();
   }

@@ -10,5 +10,7 @@ public interface QuestDatabase {
 
     void insert(Quest quest);
 
+    void remove(Quest quest);
+
     CompletableFuture<List<Quest>> getAllQuests();
 }

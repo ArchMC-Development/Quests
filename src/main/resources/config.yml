@@ -5,6 +5,15 @@
 lang:
   - en.yml
 
+# If this is set to true, then when
+# a player executes the configured
+# quests command, it will automatically
+# open the quests' menu.
+#
+# If false, then all commands will
+# be displayed in the chat
+DisplayMenuWhenNoArguments: false
+
 # # # # # # # # # #
 # COMMANDS        #
 # # # # # # # # # #
@@ -15,10 +24,8 @@ commands:
     Permission: "quests.reset"
   AddSubCommand:
     Permission: "quests.add"
-  JoinSubCommand:
-    Permission: "quests.join"
-  LeaveSubCommand:
-    Permission: "quests.leave"
+  DeleteSubCommand:
+    Permission: "quests.delete"
   StatusSubCommand:
     Permission: "quests.status"
   MenuSubCommand:
