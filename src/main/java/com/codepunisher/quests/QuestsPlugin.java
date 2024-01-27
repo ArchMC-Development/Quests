@@ -10,6 +10,7 @@ import com.codepunisher.quests.commands.lib.CommandRegistrar;
 import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestDatabase;
 import com.codepunisher.quests.database.impl.QuestDatabaseImpl;
+import com.codepunisher.quests.expansions.QuestsExpansion;
 import com.codepunisher.quests.listeners.PlayerJoinLeaveListener;
 import com.codepunisher.quests.listeners.QuestTrackingListener;
 import com.codepunisher.quests.models.Quest;
@@ -112,11 +113,18 @@ public class QuestsPlugin extends JavaPlugin {
 
     // ----- ( LISTENER ) -----
     PluginManager pluginManager = getServer().getPluginManager();
-    pluginManager.registerEvents(new PlayerJoinLeaveListener(questCache, playerCache, redisPlayerData), this);
+    pluginManager.registerEvents(
+        new PlayerJoinLeaveListener(questCache, playerCache, redisPlayerData), this);
     pluginManager.registerEvents(new QuestTrackingListener(playerCache, questCache), this);
 
     // ----- ( FASTINV REGISTRY ) -----
     FastInvManager.register(this);
+
+    // ----- ( PlaceholderAPI ) -----
+    if (pluginManager.isPluginEnabled("PlaceholderAPI")) {
+      new QuestsExpansion(questCache, playerCache).register();
+      getLogger().info("PlaceholderAPI expansion successfully registered!");
+    }
   }
 
   @Override
@@ -124,8 +132,11 @@ public class QuestsPlugin extends JavaPlugin {
     hikariDataSource.close();
 
     // This allows the plugin to be plugman reloadable
-    playerCache.getEntrySet().forEach(entry -> {
-      redisPlayerData.updateRedisFromLocalCache(entry.getKey(), entry.getValue());
-    });
+    playerCache
+        .getEntrySet()
+        .forEach(
+            entry -> {
+              redisPlayerData.updateRedisFromLocalCache(entry.getKey(), entry.getValue());
+            });
   }
 }

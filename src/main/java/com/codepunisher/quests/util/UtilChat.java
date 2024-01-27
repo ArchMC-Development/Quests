@@ -21,4 +21,9 @@ public class UtilChat {
 
     return ChatColor.translateAlternateColorCodes('&', matcher.appendTail(buffer).toString());
   }
+
+  public static String capitalize(String input) {
+    String lowerCaseInput = input.replace("_", " ").toLowerCase();
+    return Character.toUpperCase(lowerCaseInput.charAt(0)) + lowerCaseInput.substring(1);
+  }
 }
