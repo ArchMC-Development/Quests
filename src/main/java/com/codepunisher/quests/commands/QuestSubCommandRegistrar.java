@@ -32,11 +32,17 @@ public class QuestSubCommandRegistrar {
   public void register() {
     QuestResetSubCommand questsResetSubCommand =
         new QuestResetSubCommand(
-            plugin, redisActiveQuests, redisPlayerData, questCache, playerCache, proton);
+            plugin,
+            questsConfig,
+            redisActiveQuests,
+            redisPlayerData,
+            questCache,
+            playerCache,
+            proton);
     proton.registerMessageHandlers(questsResetSubCommand);
 
     QuestsAddSubCommand questsAddSubCommand =
-        new QuestsAddSubCommand(questCache, questDatabase, proton, gson);
+        new QuestsAddSubCommand(plugin, questsConfig, questCache, questDatabase, proton, gson);
     proton.registerMessageHandlers(questsAddSubCommand);
 
     QuestDeleteSubCommand questDeleteSubCommand =
@@ -50,12 +56,11 @@ public class QuestSubCommandRegistrar {
             proton);
     proton.registerMessageHandlers(questDeleteSubCommand);
 
-    questSubCommandCache.add(CmdType.RELOAD, new QuestsReloadCommand());
     questSubCommandCache.add(CmdType.ADD, questsAddSubCommand);
     questSubCommandCache.add(CmdType.DELETE, questDeleteSubCommand);
     questSubCommandCache.add(CmdType.RESET, questsResetSubCommand);
-    questSubCommandCache.add(CmdType.STATUS, new QuestsStatusSubCommand());
-    questSubCommandCache.add(CmdType.MENU, new QuestsMenuSubCommand(questCache, playerCache));
+    questSubCommandCache.add(
+        CmdType.MENU, new QuestsMenuSubCommand(questsConfig, questCache, playerCache));
     questSubCommandCache.add(
         CmdType.LANGUAGE,
         new QuestLanguageSubCommand(plugin, questsConfig, playerCache, storageDatabase));

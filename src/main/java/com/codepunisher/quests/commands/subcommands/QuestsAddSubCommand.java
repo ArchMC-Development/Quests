@@ -3,6 +3,7 @@ package com.codepunisher.quests.commands.subcommands;
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
+import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestDatabase;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.QuestType;
@@ -11,13 +12,16 @@ import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.message.MessageHandler;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestsAddSubCommand implements QuestsSubCommand {
+  private final JavaPlugin plugin;
+  private final QuestsConfig questsConfig;
   private final QuestCache questCache;
   private final QuestDatabase questDatabase;
   private final ProtonManager proton;
@@ -26,11 +30,11 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
   @Override
   public Consumer<CommandCall> getCommandCallConsumer() {
     return call -> {
-      Player player = call.asPlayer();
+      CommandSender sender = call.getSender();
       try {
         String id = call.getArg(1).toLowerCase();
         if (questCache.getQuest(id).isPresent()) {
-          player.sendMessage(UtilChat.colorize("&cThat quest id already exists!"));
+          sender.sendMessage(UtilChat.colorize("&cThat quest id already exists!"));
           return;
         }
 
@@ -47,13 +51,20 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
         questCache.add(quest);
         questDatabase.insert(quest);
         proton.broadcast("quest-plugin", "quest-add", gson.toJson(quest));
-        player.sendMessage(
-            UtilChat.colorize("&aYour mom this totally works get fucking good kid: &f" + id));
-      } catch (RuntimeException e) {
-        e.getStackTrace();
-        player.sendMessage(
+        plugin
+            .getLogger()
+            .info(String.format("%s has been added by %s", quest.getId(), sender.getName()));
+        sender.sendMessage(
             UtilChat.colorize(
-                "&cInvalid usage! Example -> /quest add <id> <type> <association> <min> <max> <permission> <console-command-rewards>"));
+                questsConfig.getLang(sender).getQuestAddSuccess().replaceAll("%1%", id)));
+      } catch (RuntimeException e) {
+        sender.sendMessage(
+            UtilChat.colorize(questsConfig.getLang(sender).getInvalidQuestAddUsage())
+                .replaceAll(
+                    "%1%",
+                    "/"
+                        + call.getName()
+                        + " add <id> <type> <association> <min> <max> <permission> <console-command-rewards>"));
       }
     };
   }

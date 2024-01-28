@@ -18,20 +18,21 @@ lang:
 # be displayed in the chat
 DisplayMenuWhenNoArguments: false
 
+# How many quests should be pulled
+# from the total quests pull when
+# the quests are reset
+RandomizedPoolAmount: 3
+
 # # # # # # # # # #
 # COMMANDS        #
 # # # # # # # # # #
 commands:
-  ReloadSubCommand:
-    Permission: "quests.reload"
   ResetSubCommand:
     Permission: "quests.reset"
   AddSubCommand:
     Permission: "quests.add"
   DeleteSubCommand:
     Permission: "quests.delete"
-  StatusSubCommand:
-    Permission: "quests.status"
   MenuSubCommand:
     Permission: "quests.menu"
   LanguageSubCommand:

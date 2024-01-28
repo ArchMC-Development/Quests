@@ -57,13 +57,12 @@ public class CommandHandler extends org.bukkit.command.Command {
         return false;
       }
 
-      Player player = (Player) sender;
-      if (!hasPermission(player)) {
-        sender.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getNoPermission()));
+      if (!hasPermission(sender)) {
+        sender.sendMessage(UtilChat.colorize(questsConfig.getLang(sender).getNoPermission()));
         return false;
       }
 
-      method.invoke(object, new CommandCall(player, args, getName()));
+      method.invoke(object, new CommandCall(sender, args, getName()));
       return true;
     } catch (Exception e) {
       plugin.getLogger().log(Level.WARNING, "Command Error", e);

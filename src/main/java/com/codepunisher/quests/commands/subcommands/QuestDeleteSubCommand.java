@@ -6,7 +6,7 @@ import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
 import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestDatabase;
-import com.codepunisher.quests.menu.AreYouSureDeleteMenu;
+import com.codepunisher.quests.menu.AreYouSureMenu;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.redis.RedisActiveQuests;
@@ -41,9 +41,10 @@ public class QuestDeleteSubCommand implements QuestsSubCommand {
           throw new NullPointerException();
         }
 
-        new AreYouSureDeleteMenu(
+        new AreYouSureMenu(
                 player,
                 questsConfig,
+                questsConfig.getLang(player).getAreYouSureDeleteInventory(),
                 () -> {
                   Quest quest = optionalQuest.get();
                   questDatabase.remove(quest);
@@ -61,7 +62,9 @@ public class QuestDeleteSubCommand implements QuestsSubCommand {
                               .getLang(player)
                               .getQuestDeleted()
                               .replaceAll("%1%", quest.getId())));
-                })
+                  player.closeInventory();
+                },
+                player::closeInventory)
             .open(player);
       } catch (Exception e) {
         player.sendMessage(

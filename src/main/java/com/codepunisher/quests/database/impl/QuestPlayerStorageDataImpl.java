@@ -31,7 +31,7 @@ public class QuestPlayerStorageDataImpl implements QuestPlayerStorageDatabase {
                     "CREATE TABLE IF NOT EXISTS quests_player_storage ("
                         + "uuid VARCHAR(36) PRIMARY KEY,"
                         + "lang VARCHAR(16),"
-                        + "completd_quets INT"
+                        + "completed_quests INT"
                         + ")";
 
                 statement.executeUpdate(createTableQuery);
@@ -56,7 +56,7 @@ public class QuestPlayerStorageDataImpl implements QuestPlayerStorageDatabase {
             () -> {
               try (Connection connection = hikariDataSource.getConnection()) {
                 String insertQuery =
-                    "INSERT INTO quests (uuid, lang, completed_quests) VALUES (?, ?, ?) "
+                    "INSERT INTO quests_player_storage (uuid, lang, completed_quests) VALUES (?, ?, ?) "
                         + "ON DUPLICATE KEY UPDATE lang=VALUES(lang), completed_quests=VALUES(completed_quests)";
 
                 try (PreparedStatement preparedStatement =
@@ -69,14 +69,25 @@ public class QuestPlayerStorageDataImpl implements QuestPlayerStorageDatabase {
                       .getLogger()
                       .info(
                           "Player storage successfully inserted/updated in the database: " + uuid);
-                } catch (SQLException ignored) {
+                } catch (SQLException e) {
+                  plugin
+                      .getLogger()
+                      .severe(
+                          "Error when inserting/updating player storage in the database! "
+                              + uuid
+                              + " "
+                              + e.getMessage()
+                              + " "
+                              + Arrays.toString(e.getStackTrace()));
                 }
               } catch (SQLException e) {
                 plugin
                     .getLogger()
                     .severe(
-                        "Error when inserting/updating player storage in the database! "
+                        "Error when establishing a database connection! "
                             + uuid
+                            + " "
+                            + e.getMessage()
                             + " "
                             + Arrays.toString(e.getStackTrace()));
               }
@@ -94,7 +105,7 @@ public class QuestPlayerStorageDataImpl implements QuestPlayerStorageDatabase {
             plugin,
             () -> {
               try (Connection connection = hikariDataSource.getConnection()) {
-                String selectQuery = "SELECT * FROM quests WHERE uuid = ?";
+                String selectQuery = "SELECT * FROM quests_player_storage WHERE uuid = ?";
 
                 try (PreparedStatement preparedStatement =
                     connection.prepareStatement(selectQuery)) {

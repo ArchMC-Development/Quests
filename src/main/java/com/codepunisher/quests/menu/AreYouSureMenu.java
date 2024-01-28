@@ -2,23 +2,28 @@ package com.codepunisher.quests.menu;
 
 import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.models.ButtonType;
+import com.codepunisher.quests.models.gui.GuiInventory;
 import org.bukkit.entity.Player;
 
-public class AreYouSureDeleteMenu extends AbstractMenu {
-  public AreYouSureDeleteMenu(Player player, QuestsConfig config, Runnable successRunnable) {
-    super(player, config, config.getLang(player).getAreYouSureDeleteInventory());
+public class AreYouSureMenu extends AbstractMenu {
+  public AreYouSureMenu(
+      Player player,
+      QuestsConfig config,
+      GuiInventory areYouSureInventory,
+      Runnable yes,
+      Runnable no) {
+    super(player, config, areYouSureInventory);
 
     addClickHandler(
         ButtonType.ARE_YOU_SURE_YES,
         (event) -> {
-          successRunnable.run();
-          player.closeInventory();
+          yes.run();
         });
 
     addClickHandler(
         ButtonType.ARE_YOU_SURE_NO,
         (event) -> {
-          player.closeInventory();
+          no.run();
         });
   }
 }

@@ -5,16 +5,12 @@ import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
 import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestPlayerStorageDatabase;
-import com.codepunisher.quests.models.LangCmd;
 import com.codepunisher.quests.models.PlayerStorageData;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -29,11 +25,20 @@ public class QuestLanguageSubCommand implements QuestsSubCommand {
   public Consumer<CommandCall> getCommandCallConsumer() {
     return call -> {
       Player player = call.asPlayer();
-      if (call.hasNoArgs() || !questsConfig.getLanguageCommandMap().containsKey(call.getArg(1))) {
+      if (call.getArgs().length <= 1
+          || !questsConfig.getLanguageCommandMap().containsKey(call.getArg(1) + ".yml")) {
         player.sendMessage(
-            ChatColor.RED
-                + "That language does not exist "
-                + questsConfig.getLanguageCommandMap().keySet());
+            UtilChat.colorize(
+                questsConfig
+                    .getLang(player)
+                    .getLanguageDoesNotExist()
+                    .replace(
+                        "%1%",
+                        questsConfig.getLanguageCommandMap().keySet().stream()
+                            .map(key -> key.replace(".yml", ""))
+                            .toList()
+                            .toString())));
+
         return;
       }
 
@@ -48,7 +53,9 @@ public class QuestLanguageSubCommand implements QuestsSubCommand {
           .getLogger()
           .info(String.format("%s changed their language to %s", player.getName(), language));
 
-      player.sendMessage(UtilChat.colorize("&aYour language has been set to " + language));
+      player.sendMessage(
+          UtilChat.colorize(
+              questsConfig.getLang(player).getLanguageChangeSuccess().replaceAll("%1%", language)));
     };
   }
 }

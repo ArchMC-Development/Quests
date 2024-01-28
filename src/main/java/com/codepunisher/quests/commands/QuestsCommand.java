@@ -10,6 +10,7 @@ import com.codepunisher.quests.models.CmdType;
 import com.codepunisher.quests.models.LangCmd;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -23,11 +24,10 @@ public class QuestsCommand implements Consumer<TabDynamic> {
 
   @Command(
       label = "%s",
-      player = true,
       commandArgumentList = {@CommandArgument(index = 0, dynamicId = "subcommands")})
   public void onPrimaryCommand(CommandCall call) {
-    Player player = call.asPlayer();
-    LangCmd langCmd = questsConfig.getLang(player).getLangCmd();
+    CommandSender sender = call.getSender();
+    LangCmd langCmd = questsConfig.getLang(sender).getLangCmd();
     if (call.hasNoArgs()) {
       if (questsConfig.isDisplayMenuWhenNoArguments()) {
         executeSubCommand(CmdType.MENU, call);
@@ -48,10 +48,10 @@ public class QuestsCommand implements Consumer<TabDynamic> {
                                       .replaceAll("%1%", call.getName())
                                       .replaceAll("%2%", cmd)
                                       .replaceAll("%3%", subCommand.getUsage());
-                              player.sendMessage(UtilChat.colorize(display));
+                              sender.sendMessage(UtilChat.colorize(display));
                             });
                   } else {
-                    player.sendMessage(UtilChat.colorize(s));
+                    sender.sendMessage(UtilChat.colorize(s));
                   }
                 });
       }
@@ -61,15 +61,17 @@ public class QuestsCommand implements Consumer<TabDynamic> {
     Optional.ofNullable(langCmd.getSubCommands().get(call.getArg(0)))
         .ifPresentOrElse(
             (subCommand -> {
-              if (!player.hasPermission(subCommand.getPermission())) {
-                player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getNoPermission()));
+              if (!sender.hasPermission(subCommand.getPermission())) {
+                sender.sendMessage(
+                    UtilChat.colorize(questsConfig.getLang(sender).getNoPermission()));
                 return;
               }
 
               executeSubCommand(subCommand.getType(), call);
             }),
             () -> {
-              player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getCommandDoesNotExist()));
+              sender.sendMessage(
+                  UtilChat.colorize(questsConfig.getLang(sender).getCommandDoesNotExist()));
             });
   }
 
@@ -87,6 +89,12 @@ public class QuestsCommand implements Consumer<TabDynamic> {
   }
 
   private void executeSubCommand(CmdType cmdType, CommandCall call) {
+    CommandSender sender = call.getSender();
+    if (!(sender instanceof Player) && !cmdType.isConsole()) {
+      sender.sendMessage(UtilChat.colorize(questsConfig.getLang(sender).getNoConsole()));
+      return;
+    }
+
     subCommandCache
         .getQuestSubCommand(cmdType)
         .ifPresent(

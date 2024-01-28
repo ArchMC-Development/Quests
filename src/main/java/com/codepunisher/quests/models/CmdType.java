@@ -6,13 +6,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CmdType {
-  RELOAD("ReloadSubCommand"),
-  RESET("ResetSubCommand"),
-  ADD("AddSubCommand"),
-  DELETE("DeleteSubCommand"),
-  STATUS("StatusSubCommand"),
-  MENU("MenuSubCommand"),
-  LANGUAGE("LanguageSubCommand");
+  RESET("ResetSubCommand", true),
+  ADD("AddSubCommand", true),
+  DELETE("DeleteSubCommand", false),
+  MENU("MenuSubCommand", false),
+  LANGUAGE("LanguageSubCommand", false);
 
   private final String configPath;
+  private final boolean console;
 }

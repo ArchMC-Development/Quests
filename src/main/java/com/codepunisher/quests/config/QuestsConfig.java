@@ -2,10 +2,13 @@ package com.codepunisher.quests.config;
 
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.models.*;
+import com.codepunisher.quests.models.gui.ActiveQuestGuiInventory;
+import com.codepunisher.quests.models.gui.GuiInventory;
 import com.zaxxer.hikari.HikariConfig;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +27,7 @@ public class QuestsConfig {
 
   @Getter private HikariConfig hikariConfig;
   @Getter private boolean displayMenuWhenNoArguments;
+  @Getter private int randomizedPoolAmount;
 
   public QuestsConfig(QuestPlayerCache playerCache) {
     this.languageCommandMap = new HashMap<>();
@@ -47,29 +51,32 @@ public class QuestsConfig {
   }
 
   /** Important: en.yml is acting as a default here */
-  public QuestsLanguageConfig getLang(Player player) {
+  public QuestsLanguageConfig getLang(CommandSender sender) {
+    if (!(sender instanceof Player player)) {
+      return getDefaultLang();
+    }
+
     PlayerStorageData storageData = playerCache.getPlayerStorageData(player.getUniqueId());
     String language = storageData.getLanguage();
     if (language == null) {
-      return languageCommandMap.get("en.yml");
+      return getDefaultLang();
     }
 
-    QuestsLanguageConfig languageConfig = languageCommandMap.get(language);
+    QuestsLanguageConfig languageConfig = languageCommandMap.get(language + ".yml");
     if (languageConfig == null) {
-      return languageCommandMap.get("en.yml");
+      return getDefaultLang();
     }
 
     return languageConfig;
   }
 
-  /**
-   * Returns en.yml default lang (should never be null)
-   */
+  /** Returns en.yml default lang (should never be null) */
   public QuestsLanguageConfig getDefaultLang() {
     return languageCommandMap.get("en.yml");
   }
 
   private void loadGenericConfigSettings(YamlDocument defaultConfig) {
+    randomizedPoolAmount = defaultConfig.getInt("RandomizedPoolAmount");
     displayMenuWhenNoArguments = defaultConfig.getBoolean("DisplayMenuWhenNoArguments");
   }
 
@@ -148,6 +155,12 @@ public class QuestsConfig {
 
     languageConfig.setAreYouSureDeleteInventory(
         getGuiInventoryFromPath("messages.QuestDeleteAreYouSureMenu", messageConfig));
+    languageConfig.setAreYouSureLeaveInventory(
+        getGuiInventoryFromPath("messages.QuestDeleteAreYouSureMenu", messageConfig));
+    languageConfig.setAreYouSureSwitchInventory(
+        getGuiInventoryFromPath("messages.QuestSwitchAreYouSureMenu", messageConfig));
+
+    languageConfig.setActiveQuestGuiInventory(getActiveQuestGuiInventory(messageConfig));
 
     languageConfig.setCommandDoesNotExist(messageConfig.getString("messages.CommandDoesNotExist"));
     languageConfig.setNoPermission(messageConfig.getString("messages.NoPermission"));
@@ -155,6 +168,19 @@ public class QuestsConfig {
     languageConfig.setQuestDeleted(messageConfig.getString("messages.QuestDeleted"));
     languageConfig.setQuestDeletedByAdmin(messageConfig.getString("messages.QuestDeletedByAdmin"));
     languageConfig.setQuestDoesNotExist(messageConfig.getString("messages.QuestDoesNotExist"));
+    languageConfig.setLanguageDoesNotExist(
+        messageConfig.getString("messages.LanguageDoesNotExist"));
+    languageConfig.setLanguageChangeSuccess(
+        messageConfig.getString("messages.LanguageChangeSuccess"));
+    languageConfig.setQuestsResetSuccess(messageConfig.getString("messages.QuestsResetSuccess"));
+    languageConfig.setQuestsResetToPlayers(
+        messageConfig.getString("messages.QuestsResetToPlayers"));
+    languageConfig.setQuestAddSuccess(messageConfig.getString("messages.QuestAddSuccess"));
+    languageConfig.setInvalidQuestAddUsage(
+        messageConfig.getString("messages.InvalidQuestAddUsage"));
+    languageConfig.setQuestJoin(messageConfig.getString("messages.QuestJoin"));
+    languageConfig.setQuestSwitch(messageConfig.getString("messages.QuestSwitch"));
+    languageConfig.setQuestLeave(messageConfig.getString("messages.QuestLeave"));
 
     languageCommandMap.put(langKey, languageConfig);
   }
@@ -203,6 +229,20 @@ public class QuestsConfig {
     return openSound == null
         ? new GuiInventory(guiItems, size, title, guiType)
         : new GuiInventory(guiItems, size, title, guiType, openSound);
+  }
+
+  private ActiveQuestGuiInventory getActiveQuestGuiInventory(YamlDocument config) {
+    String path = "messages.ActiveQuestsMenu.";
+    int size = config.getInt(path + "Size");
+    String title = config.getString(path + "Title");
+    String name = config.getString(path + "Name");
+    List<String> lore = config.getStringList(path + "Lore");
+    String joinSound = config.getString(path + "JoinSound");
+    String leaveSound = config.getString(path + "LeaveSound");
+    String switchSound = config.getString(path + "SwitchSound");
+    String openSound = config.getString(path + "OpenSound");
+    return new ActiveQuestGuiInventory(
+        size, title, name, lore, joinSound, leaveSound, switchSound, openSound);
   }
 
   private GuiItem getGuiItemFromConfigPath(String path, YamlDocument config) {

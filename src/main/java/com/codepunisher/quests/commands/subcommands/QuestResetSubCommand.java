@@ -4,15 +4,17 @@ import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
+import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.redis.RedisPlayerData;
+import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.message.MessageHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,8 +23,8 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestResetSubCommand implements QuestsSubCommand {
-  private static final int RANDOMIZE_POOL_AMOUNT = 3;
   private final JavaPlugin plugin;
+  private final QuestsConfig questsConfig;
   private final RedisActiveQuests redisActiveQuests;
   private final RedisPlayerData redisPlayerData;
   private final QuestCache questCache;
@@ -46,8 +48,9 @@ public class QuestResetSubCommand implements QuestsSubCommand {
       informOnlinePlayersAboutReset();
       proton.broadcast("quest-plugin", "quest-reset", true);
 
-      call.asPlayer().sendMessage("Reset and refreshed successfully!");
-      plugin.getLogger().info("Quests have been reset by " + call.asPlayer().getName());
+      CommandSender sender = call.getSender();
+      sender.sendMessage(UtilChat.colorize(questsConfig.getLang(sender).getQuestsResetSuccess()));
+      plugin.getLogger().info("Quests have been reset by " + sender.getName());
     };
   }
 
@@ -67,7 +70,7 @@ public class QuestResetSubCommand implements QuestsSubCommand {
     Random random = new Random();
     int counter = 0;
     for (Quest quest : questCache.getQuests()) {
-      if (counter >= RANDOMIZE_POOL_AMOUNT) {
+      if (counter >= questsConfig.getRandomizedPoolAmount()) {
         break;
       }
 
@@ -80,8 +83,8 @@ public class QuestResetSubCommand implements QuestsSubCommand {
   }
 
   private void informOnlinePlayersAboutReset() {
-    for (Player player : Bukkit .getOnlinePlayers()) {
-      player.sendMessage(ChatColor.GREEN + "Quests have been reset!");
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getQuestsResetToPlayers()));
       player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.75f, 1.5f);
     }
   }
