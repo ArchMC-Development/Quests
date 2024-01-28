@@ -13,9 +13,9 @@ Want to skip all the details and just add/test a quest? Here's examples of a com
 
 After you have added these quests, but sure to execute ```/quest reset``` to refresh the quest active cycle. Now
 you can join a quest via ```/quest menu``` and enjoy :D
-
-
-
+#
+#
+#
 ### Commands
 Commands are fully configurable in the config, but here's the default format of the commands.
 
