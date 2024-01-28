@@ -19,7 +19,6 @@ Commands are fully configurable in the config, but here's the default format of 
 
 ```/quest add <id> <type> <association> <min> <max> <permission> <console-command-rewards>``` adds quest to database, but not to the active quest pool. This will be randomly selected when the reset command is executed.
 
-
 ```/quest delete <id>```
 
 ```/quest language <lang>``` per player langauge
@@ -30,10 +29,13 @@ Commands are fully configurable in the config, but here's the default format of 
 
 ![Screenshot 2024-01-28 035427](https://github.com/TrevorMickelson/Quests/assets/70197204/ceb40ce3-cb16-41b2-b372-3cec0962469c)
 
+### Signs
 
 ### Multi-instance
+To top it all off, this plugin works in a mult-instanced server environment! This means that multiple servers can use it and interact with the same database no problem! But wait! There's more! It also works with redis! This plugin has been designed to use redis as a caching layer, and a message broker to properly balance the syncing of multiple servers.
 
 ### Multi-language
+Mult-language support has been implemented via lang files in the lang folder. By default there is english and german. A player can select their language via ```/quest language <lang>```
 
 ### PlaceholderAPI
 
