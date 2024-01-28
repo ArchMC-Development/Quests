@@ -1,6 +1,9 @@
 # Quests plugin (1.20)
 This is a simple quests plugin designed as a quest rotating system. This means that when the quest pool is reset, a brand new list of randomized quests are generated for the players to enjoy! This is different from the traditional static quests, and is best used as a daily or weekly rotation.
 
+![2024-01-28_03 57 55](https://github.com/TrevorMickelson/Quests/assets/70197204/108138d0-442a-4c37-887f-c4576e11a45b)
+![2024-01-28_04 01 57](https://github.com/TrevorMickelson/Quests/assets/70197204/fbe827be-2c1b-4956-b611-e5eb5fac3d27)
+
 ### Getting started
 Want to skip all the details and just add/test a quest? Here's examples of a commands you can type to add a quest!
 
@@ -24,6 +27,8 @@ Commands are fully configurable in the config, but here's the default format of 
 ```/quest menu``` opens quest menu to join/leave quests
 
 ```/quest reset``` resets active quest cycle
+
+![Screenshot 2024-01-28 035427](https://github.com/TrevorMickelson/Quests/assets/70197204/ceb40ce3-cb16-41b2-b372-3cec0962469c)
 
 
 ### Multi-instance
