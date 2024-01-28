@@ -30,6 +30,8 @@ Commands are fully configurable in the config, but here's the default format of 
 ![Screenshot 2024-01-28 035427](https://github.com/TrevorMickelson/Quests/assets/70197204/ceb40ce3-cb16-41b2-b372-3cec0962469c)
 #
 ### Signs
+Signs can be created by adding [quest] (or whatever the config based configured value is) to the top of any sign to have it act as a data display mechanism that works per player! Here's a simple example :D
+![2024-01-28_04 15 56](https://github.com/TrevorMickelson/Quests/assets/70197204/1e893c27-6cb7-42a4-840b-5e9398871ec3)
 #
 ### Multi-instance
 To top it all off, this plugin works in a mult-instanced server environment! This means that multiple servers can use it and interact with the same database no problem! But wait! There's more! It also works with redis! This plugin has been designed to use redis as a caching layer, and a message broker to properly balance the syncing of multiple servers.
@@ -39,6 +41,7 @@ Mult-language support has been implemented via lang files in the lang folder. By
 #
 ### PlaceholderAPI
 Just when you thought it couldn't get any better, PLACEHOLDER API SUPPORT IS HERE! Here are the following placeholders.
+
 ```%quests_current_id%```
 
 ```%current_type%```
@@ -54,7 +57,7 @@ Just when you thought it couldn't get any better, PLACEHOLDER API SUPPORT IS HER
 ```%current_active_requirement%```
 #
 ### Configs
-####en.yml (default lang)
+#### en.yml (default lang)
 ```
 messages:
  # # # # # # # # # #
@@ -312,7 +315,7 @@ messages:
   - "&aProgress &f%4%"
 ```
 
-####config.yml
+#### config.yml
 ```
 # Which languages should be cached?
 #
@@ -377,7 +380,7 @@ redis:
   Port: 6379
 ```
 
-###server.yml
+#### server.yml
 ```
 server: test
 ```
