@@ -1,30 +1,44 @@
 package com.codepunisher.quests.cache;
 
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
+import com.codepunisher.quests.models.PlayerStorageData;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class QuestPlayerCache {
-  private final Map<UUID, QuestPlayerData> playerDataMap = new ConcurrentHashMap<>();
+  private final Map<UUID, ActiveQuestPlayerData> activeQuestsPlayerDataMap = new ConcurrentHashMap<>();
+  private final Map<UUID, PlayerStorageData> playerStorageDataMap = new ConcurrentHashMap<>();
 
-    public void add(UUID uuid, QuestPlayerData playerData) {
-        playerDataMap.put(uuid, playerData);
-    }
+  public void addActiveQuestUser(UUID uuid, ActiveQuestPlayerData playerData) {
+    activeQuestsPlayerDataMap.put(uuid, playerData);
+  }
 
-    public void remove(UUID uuid) {
-        playerDataMap.remove(uuid);
-    }
+  public void addPlayerStorage(UUID uuid, PlayerStorageData storageData) {
+    playerStorageDataMap.put(uuid, storageData);
+  }
 
-    public void removeAll() {
-        playerDataMap.clear();
-    }
+  public void removeActiveQuestUser(UUID uuid) {
+    activeQuestsPlayerDataMap.remove(uuid);
+  }
 
-    public Optional<QuestPlayerData> get(UUID uuid) {
-        return Optional.ofNullable(playerDataMap.get(uuid));
-    }
+  public void removePlayerStorage(UUID uuid) {
+    playerStorageDataMap.remove(uuid);
+  }
 
-    public Set<Map.Entry<UUID, QuestPlayerData>> getEntrySet() {
-        return playerDataMap.entrySet();
-    }
+  public void removeAllActiveQuestUsers() {
+    activeQuestsPlayerDataMap.clear();
+  }
+
+  public Optional<ActiveQuestPlayerData> getActiveQuestPlayerData(UUID uuid) {
+    return Optional.ofNullable(activeQuestsPlayerDataMap.get(uuid));
+  }
+
+  public PlayerStorageData getPlayerStorageData(UUID uuid) {
+    return playerStorageDataMap.getOrDefault(uuid, new PlayerStorageData());
+  }
+
+  public Set<Map.Entry<UUID, ActiveQuestPlayerData>> getActiveQuestEntrySet() {
+    return activeQuestsPlayerDataMap.entrySet();
+  }
 }

@@ -1,6 +1,7 @@
 package com.codepunisher.quests;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
+import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.config.QuestsConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.After;
@@ -19,7 +20,7 @@ public class QuestsConfigTest {
   public void setUp() {
     MockBukkit.mock();
     plugin = MockBukkit.createMockPlugin();
-    questsConfig = new QuestsConfig();
+    questsConfig = new QuestsConfig(new QuestPlayerCache());
   }
 
   @After

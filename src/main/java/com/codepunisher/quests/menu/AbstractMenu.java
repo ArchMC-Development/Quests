@@ -23,7 +23,7 @@ public abstract class AbstractMenu extends FastInv {
         this.guiInventory = guiInventory;
 
         // Filling background (if the item matches the inventory type)
-        config.getBackGroundItems().stream()
+        config.getLang(player).getBackGroundItems().stream()
                 .filter(guiItem -> guiItem.getGuiTypes().contains(guiInventory.getGuiType()))
                 .forEach(guiItem -> {
                     guiItem.getSlots().forEach(slot -> {
@@ -54,7 +54,7 @@ public abstract class AbstractMenu extends FastInv {
 
         // Gui open sound
         if (guiInventory.getOpenSound() != null) {
-            player.playSound(player.getLocation(), guiInventory.getOpenSound(), 0.75f, 1.25f);
+            player.playSound(player.getLocation(), guiInventory.getOpenSound(), 0.5f, 1.25f);
         }
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractMenu extends FastInv {
 
     private void handleGenericGuiItemDefaults(Player player, GuiItem guiItem) {
         if (guiItem.getClickSound() != null) {
-            player.playSound(player.getLocation(), guiItem.getClickSound(), 0.75f, 1.25f);
+            player.playSound(player.getLocation(), guiItem.getClickSound(), 0.5f, 1.25f);
         }
 
         if (guiItem.isCloseOnClick()) {

@@ -3,7 +3,7 @@ package com.codepunisher.quests.expansions;
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.models.Quest;
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -35,12 +35,12 @@ public class QuestsExpansion extends PlaceholderExpansion {
 
   @Override
   public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-    Optional<QuestPlayerData> dataOptional = playerCache.get(player.getUniqueId());
+    Optional<ActiveQuestPlayerData> dataOptional = playerCache.getActiveQuestPlayerData(player.getUniqueId());
     if (dataOptional.isEmpty()) {
       return "None";
     }
 
-    QuestPlayerData playerData = dataOptional.get();
+    ActiveQuestPlayerData playerData = dataOptional.get();
     Optional<Quest> questOptional = questCache.getQuest(playerData.getCurrentQuestId());
     if (questOptional.isEmpty()) {
       return "None";

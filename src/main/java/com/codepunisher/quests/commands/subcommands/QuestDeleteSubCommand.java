@@ -4,10 +4,11 @@ import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.commands.QuestsSubCommand;
 import com.codepunisher.quests.commands.lib.CommandCall;
+import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestDatabase;
-import com.codepunisher.quests.menu.AbstractAreYouSureMenu;
+import com.codepunisher.quests.menu.AreYouSureDeleteMenu;
 import com.codepunisher.quests.models.Quest;
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
@@ -15,12 +16,15 @@ import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.message.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestDeleteSubCommand implements QuestsSubCommand {
+  private final JavaPlugin plugin;
+  private final QuestsConfig questsConfig;
   private final QuestDatabase questDatabase;
   private final RedisActiveQuests redisActiveQuests;
   private final QuestCache questCache;
@@ -37,26 +41,37 @@ public class QuestDeleteSubCommand implements QuestsSubCommand {
           throw new NullPointerException();
         }
 
-        new AbstractAreYouSureMenu(
-                p -> {
+        new AreYouSureDeleteMenu(
+                player,
+                questsConfig,
+                () -> {
                   Quest quest = optionalQuest.get();
                   questDatabase.remove(quest);
                   redisActiveQuests.removeQuest(quest);
                   wipeFromCaches(quest.getId());
                   proton.broadcast("quest-plugin", "quest-delete", quest.getId());
+                  plugin
+                      .getLogger()
+                      .info(
+                          String.format(
+                              "%s just deleted the quest %s", player.getName(), quest.getId()));
                   player.sendMessage(
-                      UtilChat.colorize("&aYou have deleted the quest: " + quest.getId()));
-                },
-                "&7This will delete the quest",
-                "&7for good! If this quest is active,",
-                "&7it will be removed from all",
-                "&7players participating!")
+                      UtilChat.colorize(
+                          questsConfig
+                              .getLang(player)
+                              .getQuestDeleted()
+                              .replaceAll("%1%", quest.getId())));
+                })
             .open(player);
-      } catch (NullPointerException e) {
+      } catch (Exception e) {
         player.sendMessage(
             UtilChat.colorize(
-                "&cThat quest does not exist! Here are all available quests "
-                    + questCache.getQuests().stream().map(Quest::getId).toList()));
+                questsConfig
+                    .getLang(player)
+                    .getQuestDoesNotExist()
+                    .replaceAll(
+                        "%1%",
+                        questCache.getQuests().stream().map(Quest::getId).toList().toString())));
       }
     };
   }
@@ -70,22 +85,20 @@ public class QuestDeleteSubCommand implements QuestsSubCommand {
     questCache.remove(id);
     questCache.removeActiveQuest(id);
     playerCache
-        .getEntrySet()
+        .getActiveQuestEntrySet()
         .forEach(
             entry -> {
-              QuestPlayerData playerData = entry.getValue();
+              ActiveQuestPlayerData playerData = entry.getValue();
               if (playerData.getCurrentQuestId().equalsIgnoreCase(id)) {
                 playerData.optOutOfCurrentQuestId();
+                Optional.ofNullable(Bukkit.getPlayer(entry.getKey()))
+                    .ifPresent(
+                        player -> {
+                          player.sendMessage(
+                              UtilChat.colorize(
+                                  questsConfig.getLang(player).getQuestDeletedByAdmin()));
+                        });
               }
-
-              // Informing player
-              Optional.ofNullable(Bukkit.getPlayer(entry.getKey()))
-                  .ifPresent(
-                      player -> {
-                        player.sendMessage(
-                            UtilChat.colorize(
-                                "&cThe quest you were in has been deleted by an admin!"));
-                      });
             });
   }
 }

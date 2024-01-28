@@ -2,13 +2,12 @@ package com.codepunisher.quests.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.boss.BossBar;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-public class QuestPlayerData {
+public class ActiveQuestPlayerData {
   private final Set<String> completedDailyQuests = new HashSet<>();
 
   @Setter private String currentQuestId = "";

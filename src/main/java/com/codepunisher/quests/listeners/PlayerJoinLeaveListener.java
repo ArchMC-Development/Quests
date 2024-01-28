@@ -2,7 +2,7 @@ package com.codepunisher.quests.listeners;
 
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class PlayerJoinLeaveListener implements Listener {
                       plugin,
                       () -> {
                         playerCache
-                            .get(player.getUniqueId())
+                            .getActiveQuestPlayerData(player.getUniqueId())
                             .ifPresent(
                                 playerData -> {
                                   removeQuestFromPlayerIfNoLongerExists(player, playerData);
@@ -50,15 +50,15 @@ public class PlayerJoinLeaveListener implements Listener {
   public void onQuit(PlayerQuitEvent event) {
     UUID uuid = event.getPlayer().getUniqueId();
     playerCache
-        .get(uuid)
+        .getActiveQuestPlayerData(uuid)
         .ifPresent(
             questPlayerData -> {
               redisPlayerData.updateRedisFromLocalCache(uuid, questPlayerData);
-              playerCache.remove(uuid);
+              playerCache.removeActiveQuestUser(uuid);
             });
   }
 
-  private void removeQuestFromPlayerIfNoLongerExists(Player player, QuestPlayerData playerData) {
+  private void removeQuestFromPlayerIfNoLongerExists(Player player, ActiveQuestPlayerData playerData) {
     boolean questWasRemoved =
         questCache.getQuest(playerData.getCurrentQuestId()).isEmpty()
             && !playerData.getCurrentQuestId().isEmpty();
@@ -69,7 +69,7 @@ public class PlayerJoinLeaveListener implements Listener {
     }
   }
 
-  private void sendCurrentQuestData(Player player, QuestPlayerData playerData) {
+  private void sendCurrentQuestData(Player player, ActiveQuestPlayerData playerData) {
     questCache
         .getQuest(playerData.getCurrentQuestId())
         .ifPresent(

@@ -3,7 +3,7 @@ package com.codepunisher.quests.listeners;
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.models.Quest;
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.models.QuestType;
 import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
@@ -89,12 +89,12 @@ public class QuestTrackingListener implements Listener {
   private <T> void handleQuestProgressIncrease(
       Player player, QuestType questType, T associatedObject, int progressIncrease) {
     UUID uuid = player.getUniqueId();
-    Optional<QuestPlayerData> playerDataOptional = playerCache.get(uuid);
+    Optional<ActiveQuestPlayerData> playerDataOptional = playerCache.getActiveQuestPlayerData(uuid);
     if (playerDataOptional.isEmpty()) {
       return;
     }
 
-    QuestPlayerData playerData = playerDataOptional.get();
+    ActiveQuestPlayerData playerData = playerDataOptional.get();
     String questId = playerData.getCurrentQuestId();
     Optional<Quest> questOptional = questCache.getQuest(questId);
     if (questOptional.isEmpty()) {
@@ -154,7 +154,7 @@ public class QuestTrackingListener implements Listener {
    * Displays current progress on player boss bar object and goes away after a few seconds. This is
    * working with the boss bar map
    */
-  private void displayBossBarProgress(Player player, QuestPlayerData playerData) {
+  private void displayBossBarProgress(Player player, ActiveQuestPlayerData playerData) {
     UUID uuid = player.getUniqueId();
 
     // Removing previous boss bar

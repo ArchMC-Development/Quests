@@ -1,47 +1,34 @@
 package com.codepunisher.quests.config;
 
-import com.codepunisher.quests.models.CmdType;
-import com.codepunisher.quests.models.GuiInventory;
-import com.codepunisher.quests.models.GuiItem;
-import com.codepunisher.quests.models.LangCmd;
+import com.codepunisher.quests.cache.QuestPlayerCache;
+import com.codepunisher.quests.models.*;
 import com.zaxxer.hikari.HikariConfig;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@Getter
 public class QuestsConfig {
   private static final String LANG_FOLDER_NAME = "lang/";
   private static final String CONFIG_COMMANDS_PATH = "commands";
   private static final String MESSAGES_COMMANDS_PATH = "messages.commands";
 
-  // ----- ( COMMANDS ) -----
   // Key -> language from file name
-  // Value -> Language command object (all commands for language)
-  private final Map<String, LangCmd> languageCommandMap = new HashMap<>();
+  @Getter private final Map<String, QuestsLanguageConfig> languageCommandMap;
+  private final QuestPlayerCache playerCache;
 
-  // ----- ( DATABASE ) -----
-  private HikariConfig hikariConfig;
+  @Getter private HikariConfig hikariConfig;
+  @Getter private boolean displayMenuWhenNoArguments;
 
-  // ----- ( MENU ) -----
-  private List<GuiItem> backGroundItems;
-  private GuiInventory configurationInventory;
-  private GuiInventory configurationEditCategoryInventory;
-
-  // ----- ( GENERAL MESSAGES ) -----
-  private String commandDoesNotExist;
-  private String noPermission;
-  private String noConsole;
-
-  // ----- ( GENERAL CONFIGURATIONS ) -----
-//  private List<String> completingAllActiveQuestsMessage;
-//  private List<String> completingAllActiveQuestsRewards;
-  private boolean displayMenuWhenNoArguments;
+  public QuestsConfig(QuestPlayerCache playerCache) {
+    this.languageCommandMap = new HashMap<>();
+    this.playerCache = playerCache;
+  }
 
   public void reload(JavaPlugin plugin) {
     try {
@@ -59,9 +46,30 @@ public class QuestsConfig {
     }
   }
 
+  /** Important: en.yml is acting as a default here */
+  public QuestsLanguageConfig getLang(Player player) {
+    PlayerStorageData storageData = playerCache.getPlayerStorageData(player.getUniqueId());
+    String language = storageData.getLanguage();
+    if (language == null) {
+      return languageCommandMap.get("en.yml");
+    }
+
+    QuestsLanguageConfig languageConfig = languageCommandMap.get(language);
+    if (languageConfig == null) {
+      return languageCommandMap.get("en.yml");
+    }
+
+    return languageConfig;
+  }
+
+  /**
+   * Returns en.yml default lang (should never be null)
+   */
+  public QuestsLanguageConfig getDefaultLang() {
+    return languageCommandMap.get("en.yml");
+  }
+
   private void loadGenericConfigSettings(YamlDocument defaultConfig) {
-//    completingAllActiveQuestsMessage = defaultConfig.getStringList("CompletingAllActiveQuestsMessage");
-//    completingAllActiveQuestsRewards = defaultConfig.getStringList("CompletingAllActiveQuestsRewards");
     displayMenuWhenNoArguments = defaultConfig.getBoolean("DisplayMenuWhenNoArguments");
   }
 
@@ -122,8 +130,8 @@ public class QuestsConfig {
    */
   private void loadMessageYamlSettingsIntoCache(
       YamlDocument defaultConfig, YamlDocument messageConfig, String langKey) {
-    // ----- ( COMMANDS ) -----
-    languageCommandMap.put(langKey, getLandCmdFromLangFile(defaultConfig, messageConfig));
+    QuestsLanguageConfig languageConfig = new QuestsLanguageConfig();
+    languageConfig.setLangCmd(getLandCmdFromLangFile(defaultConfig, messageConfig));
 
     // ----- ( MENU ) -----
     List<GuiItem> backGroundItems = new ArrayList<>();
@@ -135,16 +143,20 @@ public class QuestsConfig {
               backGroundItems.add(
                   getGuiItemFromConfigPath("messages.GenericBackGroundItems." + s, messageConfig));
             });
-    this.backGroundItems = backGroundItems;
-    this.configurationInventory =
-        getGuiInventoryFromPath("messages.QuestConfigurationMenu", messageConfig);
-    this.configurationEditCategoryInventory =
-        getGuiInventoryFromPath("messages.QuestConfigurationCategoryMenu", messageConfig);
 
-    // ----- ( GENERAL MESSAGES ) -----
-    this.commandDoesNotExist = messageConfig.getString("messages.CommandDoesNotExist");
-    this.noPermission = messageConfig.getString("messages.NoPermission");
-    this.noConsole = messageConfig.getString("messages.NoConsole");
+    languageConfig.setBackGroundItems(backGroundItems);
+
+    languageConfig.setAreYouSureDeleteInventory(
+        getGuiInventoryFromPath("messages.QuestDeleteAreYouSureMenu", messageConfig));
+
+    languageConfig.setCommandDoesNotExist(messageConfig.getString("messages.CommandDoesNotExist"));
+    languageConfig.setNoPermission(messageConfig.getString("messages.NoPermission"));
+    languageConfig.setNoConsole(messageConfig.getString("messages.NoConsole"));
+    languageConfig.setQuestDeleted(messageConfig.getString("messages.QuestDeleted"));
+    languageConfig.setQuestDeletedByAdmin(messageConfig.getString("messages.QuestDeletedByAdmin"));
+    languageConfig.setQuestDoesNotExist(messageConfig.getString("messages.QuestDoesNotExist"));
+
+    languageCommandMap.put(langKey, languageConfig);
   }
 
   // LangCmd object per language file

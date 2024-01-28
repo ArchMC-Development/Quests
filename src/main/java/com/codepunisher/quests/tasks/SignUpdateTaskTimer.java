@@ -5,7 +5,7 @@ import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.cache.QuestSignCache;
 import com.codepunisher.quests.models.LocationWrapper;
 import com.codepunisher.quests.models.Quest;
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
@@ -37,13 +37,13 @@ public class SignUpdateTaskTimer implements Runnable {
   }
 
   private void sendSignUpdateToPlayers(Player player, Location signLocation) {
-    Optional<QuestPlayerData> optionalPlayerData = playerCache.get(player.getUniqueId());
+    Optional<ActiveQuestPlayerData> optionalPlayerData = playerCache.getActiveQuestPlayerData(player.getUniqueId());
     if (optionalPlayerData.isEmpty()) {
       sendSignUpdate(player, signLocation, "none", "none", "none", "none");
       return;
     }
 
-    QuestPlayerData playerData = optionalPlayerData.get();
+    ActiveQuestPlayerData playerData = optionalPlayerData.get();
     Optional<Quest> optionalQuest = questCache.getQuest(playerData.getCurrentQuestId());
     if (optionalQuest.isEmpty()) {
       sendSignUpdate(player, signLocation, "none", "none", "none", "none");

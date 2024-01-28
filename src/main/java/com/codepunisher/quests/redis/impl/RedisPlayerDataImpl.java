@@ -1,7 +1,7 @@
 package com.codepunisher.quests.redis.impl;
 
 import com.codepunisher.quests.cache.QuestPlayerCache;
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
@@ -32,6 +32,7 @@ public class RedisPlayerDataImpl implements RedisPlayerData {
             () -> {
               try (Jedis jedis = jedisPool.getResource()) {
                 Set<String> keysToDelete = jedis.keys(JEDIS_PLAYER_DATA + ":*");
+                plugin.getLogger().info("Redis player data has been cleared successfully!");
                 if (!keysToDelete.isEmpty()) {
                   jedis.del(keysToDelete.toArray(new String[0]));
                 }
@@ -56,6 +57,7 @@ public class RedisPlayerDataImpl implements RedisPlayerData {
             () -> {
               try (Jedis jedis = jedisPool.getResource()) {
                 jedis.del(getKey(uuid));
+                plugin.getLogger().info("Redis player data cleared: " + uuid);
               } catch (Exception e) {
                 plugin
                     .getLogger()
@@ -76,8 +78,8 @@ public class RedisPlayerDataImpl implements RedisPlayerData {
               return;
             }
 
-            QuestPlayerData playerData = gson.fromJson(redisValue, QuestPlayerData.class);
-            playerCache.add(uuid, playerData);
+            ActiveQuestPlayerData playerData = gson.fromJson(redisValue, ActiveQuestPlayerData.class);
+            playerCache.addActiveQuestUser(uuid, playerData);
           } catch (Exception e) {
             plugin
                 .getLogger()
@@ -90,11 +92,11 @@ public class RedisPlayerDataImpl implements RedisPlayerData {
   }
 
   @Override
-  public void updateRedisFromLocalCache(UUID uuid, QuestPlayerData questPlayerData) {
+  public void updateRedisFromLocalCache(UUID uuid, ActiveQuestPlayerData activeQuestPlayerData) {
     CompletableFuture.runAsync(
         () -> {
           try (Jedis jedis = jedisPool.getResource()) {
-            jedis.set(getKey(uuid), gson.toJson(questPlayerData));
+            jedis.set(getKey(uuid), gson.toJson(activeQuestPlayerData));
           } catch (Exception e) {
             plugin
                 .getLogger()

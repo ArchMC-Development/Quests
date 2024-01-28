@@ -2,6 +2,10 @@
 #
 # The following must be an existing
 # lang file in the "lang" folder
+#
+# WARNING: DO NOT REMOVE THE en.yml
+# file! It acts as a default is there
+# are no languages configured
 lang:
   - en.yml
 
@@ -13,14 +17,6 @@ lang:
 # If false, then all commands will
 # be displayed in the chat
 DisplayMenuWhenNoArguments: false
-
-#CompletingAllActiveQuestsSound:
-#CompletingAllActiveQuestsMessage:
-#  - "&aYou completed all active quests!"
-#  - "&cYou are no longer a failure!"
-#CompletingAllActiveQuestsRewards:
-#  - "give %player% diamond 1"
-#  - "give %player% emerald 5"
 
 # # # # # # # # # #
 # COMMANDS        #

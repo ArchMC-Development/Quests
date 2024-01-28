@@ -55,7 +55,7 @@ messages:
  # # # # # # # # # #
  #
  # ----- ( IMPORTANT INFORMATION ) -----
- # Menu types -> CONFIGURATION_MAIN, CONFIGURATION_QUESTS, CONFIGURATION_CATEGORY, CONFIGURATION_DIFFICULTY
+ # Menu types -> ARE_YOU_SURE_QUEST_DELETE, ARE_YOU_SURE_QUEST_LEAVE, ARE_YOU_SURE_QUEST_SWITCH
  # Button types -> 
  # Sounds are optional (just remove from configuration)
  GenericBackGroundItems:
@@ -64,10 +64,9 @@ messages:
    Name: "&r"
    Lore: []
    MenuTypes:
-   - CONFIGURATION_MAIN
-   - CONFIGURATION_QUESTS
-   - CONFIGURATION_CATEGORY
-   - CONFIGURATION_DIFFICULTY
+    - ARE_YOU_SURE_QUEST_DELETE
+    - ARE_YOU_SURE_QUEST_LEAVE
+    - ARE_YOU_SURE_QUEST_SWITCH
    ButtonType: NONE
    Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 41, 42, 43, 44]
    CloseOnClick: false
@@ -77,59 +76,54 @@ messages:
    Lore:
     - "&7&oClick to close"
    MenuTypes:
-    - CONFIGURATION_MAIN
-    - CONFIGURATION_QUESTS
-    - CONFIGURATION_CATEGORY
-    - CONFIGURATION_DIFFICULTY
+    - ARE_YOU_SURE_QUEST_DELETE
+    - ARE_YOU_SURE_QUEST_LEAVE
+    - ARE_YOU_SURE_QUEST_SWITCH
    ButtonType: NONE
    Slots: [40]
    ClickSound: UI_BUTTON_CLICK
    CloseOnClick: true
 
- # # # # # # # # # #
- # CONFIGURE MENU  #
- # # # # # # # # # #
- QuestConfigurationMenu:
+  # Are you sure (delete warning)
+  3:
+   Material: OAK_SIGN
+   Name: "&c&lWARNING"
+   Lore:
+    - "&7This will delete the quest for"
+    - "&7good! If this quest is active,"
+    - "&7it will be removed from all"
+    - "&7players participating!"
+   MenuTypes:
+    - ARE_YOU_SURE_QUEST_DELETE
+   ButtonType: NONE
+   Slots: [4]
+   CloseOnClick: false
+
+ # # # # # # # # # # # # # # #
+ # ARE YOU SURE DELETE MENU  #
+ # # # # # # # # # # # # # # #
+ QuestDeleteAreYouSureMenu:
   Size: 45
-  Title: "Quest Configurator"
+  Title: "Are you suer?"
   OpenSound: ITEM_BOOK_PAGE_TURN
-  MenuType: CONFIGURATION_MAIN
+  MenuType: ARE_YOU_SURE_QUEST_DELETE
   GuiItems:
    1:
-    Material: STONE_PICKAXE
-    Name: "&b&lQuests"
+    Material: LIME_WOOL
+    Name: "&a&lYes"
     Lore:
-     - "&7Click to configure quests"
-    ButtonType: QUEST_CONFIGURE
+     - "&7Click to confirm"
+    ButtonType: ARE_YOU_SURE_YES
     Slots: [ 21 ]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
    2:
-    Material: OAK_LOG
-    Name: "&6&lCategory"
+    Material: RED_WOOL
+    Name: "&c&lNo"
     Lore:
-     - "&7Click to configure categories"
-    ButtonType: CATEGORY_CONFIGURE
+     - "&7Click to deny"
+    ButtonType: ARE_YOU_SURE_NO
     Slots: [ 23 ]
-    ClickSound: UI_BUTTON_CLICK
-    CloseOnClick: false
-
- # # # # # # # # # # # # # # #
- # CONFIGURE CATEGORY MENU   #
- # # # # # # # # # # # # # # #
- QuestConfigurationCategoryMenu:
-  Size: 45
-  Title: "Quest Configure Category"
-  OpenSound: ITEM_BOOK_PAGE_TURN
-  MenuType: CONFIGURATION_CATEGORY
-  GuiItems:
-   1:
-    Material: EMERALD
-    Name: "&a&l+"
-    Lore:
-     - "&7Create new category"
-    ButtonType: CATEGORY_ADD
-    Slots: [ 41 ]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
 
@@ -139,3 +133,6 @@ messages:
  CommandDoesNotExist: "&cThat command does not exist!"
  NoPermission: "&cYou don't have permission to do this!"
  NoConsole: "&cOnly players can execute this command!"
+ QuestDeleted: "&aYou have deleted the quest: &2%1%"
+ QuestDeletedByAdmin: "&cThe quest you were in has been deleted by an admin!"
+ QuestDoesNotExist: "&cThat quest does not exist! Here are all available quests %1%"

@@ -2,7 +2,7 @@ package com.codepunisher.quests.menu;
 
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import fr.mrmicky.fastinv.FastInv;
@@ -33,7 +33,7 @@ public class QuestsDailyCycleMenu extends FastInv {
                           return;
                         }
 
-                        QuestPlayerData playerData = getPlayerData(player);
+                        ActiveQuestPlayerData playerData = getPlayerData(player);
                         boolean hasJoined = playerData.getCurrentQuestId().equals(quest.getId());
                         boolean isCompleted =
                             playerData.getCompletedDailyQuests().contains(quest.getId());
@@ -97,7 +97,7 @@ public class QuestsDailyCycleMenu extends FastInv {
                                 new AbstractAreYouSureMenu(
                                         p -> {
                                           playerData.setCurrentQuestId(quest.getId());
-                                          playerCache.add(player.getUniqueId(), playerData);
+                                          playerCache.addActiveQuestUser(player.getUniqueId(), playerData);
                                           player.sendMessage(
                                               UtilChat.colorize("&aYou have joined the quest!"));
                                           new QuestsDailyCycleMenu(player, questCache, playerCache)
@@ -112,7 +112,7 @@ public class QuestsDailyCycleMenu extends FastInv {
                               }
 
                               playerData.setCurrentQuestId(quest.getId());
-                              playerCache.add(player.getUniqueId(), playerData);
+                              playerCache.addActiveQuestUser(player.getUniqueId(), playerData);
                               player.sendMessage(UtilChat.colorize("&aYou have joined the quest!"));
                               new QuestsDailyCycleMenu(player, questCache, playerCache)
                                   .open(player);
@@ -121,8 +121,8 @@ public class QuestsDailyCycleMenu extends FastInv {
             });
   }
 
-  private QuestPlayerData getPlayerData(Player player) {
-    Optional<QuestPlayerData> optionalPlayerData = playerCache.get(player.getUniqueId());
-    return optionalPlayerData.orElseGet(QuestPlayerData::new);
+  private ActiveQuestPlayerData getPlayerData(Player player) {
+    Optional<ActiveQuestPlayerData> optionalPlayerData = playerCache.getActiveQuestPlayerData(player.getUniqueId());
+    return optionalPlayerData.orElseGet(ActiveQuestPlayerData::new);
   }
 }

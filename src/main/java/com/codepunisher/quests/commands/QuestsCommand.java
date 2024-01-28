@@ -5,7 +5,6 @@ import com.codepunisher.quests.commands.lib.Command;
 import com.codepunisher.quests.commands.lib.CommandArgument;
 import com.codepunisher.quests.commands.lib.CommandCall;
 import com.codepunisher.quests.commands.lib.TabDynamic;
-import com.codepunisher.quests.commands.subcommands.QuestLanguageSubCommand;
 import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.models.CmdType;
 import com.codepunisher.quests.models.LangCmd;
@@ -28,9 +27,7 @@ public class QuestsCommand implements Consumer<TabDynamic> {
       commandArgumentList = {@CommandArgument(index = 0, dynamicId = "subcommands")})
   public void onPrimaryCommand(CommandCall call) {
     Player player = call.asPlayer();
-    String language = getLanguage(player);
-    LangCmd langCmd = questsConfig.getLanguageCommandMap().get(language);
-
+    LangCmd langCmd = questsConfig.getLang(player).getLangCmd();
     if (call.hasNoArgs()) {
       if (questsConfig.isDisplayMenuWhenNoArguments()) {
         executeSubCommand(CmdType.MENU, call);
@@ -65,14 +62,14 @@ public class QuestsCommand implements Consumer<TabDynamic> {
         .ifPresentOrElse(
             (subCommand -> {
               if (!player.hasPermission(subCommand.getPermission())) {
-                player.sendMessage(UtilChat.colorize(questsConfig.getNoPermission()));
+                player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getNoPermission()));
                 return;
               }
 
               executeSubCommand(subCommand.getType(), call);
             }),
             () -> {
-              player.sendMessage(UtilChat.colorize(questsConfig.getCommandDoesNotExist()));
+              player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getCommandDoesNotExist()));
             });
   }
 
@@ -82,25 +79,11 @@ public class QuestsCommand implements Consumer<TabDynamic> {
     tabDynamic.add(
         "subcommands",
         (player) ->
-            questsConfig
-                .getLanguageCommandMap()
-                .get(getLanguage(player))
-                .getSubCommands()
-                .entrySet()
-                .stream()
+            questsConfig.getLang(player).getLangCmd().getSubCommands().entrySet().stream()
                 .filter(entry -> player.hasPermission(entry.getValue().getPermission()))
                 .map(Map.Entry::getKey)
                 .toList()
                 .iterator());
-  }
-
-  private String getLanguage(Player player) {
-    String language = QuestLanguageSubCommand.playerTempLanguageMap.get(player.getUniqueId());
-    if (language == null) {
-      return "en.yml";
-    }
-
-    return language;
   }
 
   private void executeSubCommand(CmdType cmdType, CommandCall call) {

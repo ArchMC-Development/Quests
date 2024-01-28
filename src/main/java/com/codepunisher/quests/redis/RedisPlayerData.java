@@ -1,6 +1,6 @@
 package com.codepunisher.quests.redis;
 
-import com.codepunisher.quests.models.QuestPlayerData;
+import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -17,5 +17,5 @@ public interface RedisPlayerData {
   CompletableFuture<Void> loadRedisDataIntoLocalCache(Player player);
 
   /** Pulls most recent data from cache and updates the player data in redis */
-  void updateRedisFromLocalCache(UUID uuid, QuestPlayerData questPlayerData);
+  void updateRedisFromLocalCache(UUID uuid, ActiveQuestPlayerData activeQuestPlayerData);
 }

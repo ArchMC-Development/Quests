@@ -52,17 +52,18 @@ public class CommandHandler extends org.bukkit.command.Command {
   public boolean execute(
       @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
     try {
-      if (!hasPermission(sender)) {
-        sender.sendMessage(UtilChat.colorize(questsConfig.getNoPermission()));
-        return false;
-      }
-
       if (command.player() && sender instanceof ConsoleCommandSender) {
-        sender.sendMessage(UtilChat.colorize(questsConfig.getNoConsole()));
+        sender.sendMessage(UtilChat.colorize(questsConfig.getDefaultLang().getNoConsole()));
         return false;
       }
 
-      method.invoke(object, new CommandCall(sender, args, getName()));
+      Player player = (Player) sender;
+      if (!hasPermission(player)) {
+        sender.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getNoPermission()));
+        return false;
+      }
+
+      method.invoke(object, new CommandCall(player, args, getName()));
       return true;
     } catch (Exception e) {
       plugin.getLogger().log(Level.WARNING, "Command Error", e);

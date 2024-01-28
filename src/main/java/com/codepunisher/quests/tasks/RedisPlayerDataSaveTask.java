@@ -11,7 +11,7 @@ public class RedisPlayerDataSaveTask implements Runnable {
 
     @Override
     public void run() {
-        playerCache.getEntrySet().forEach(entry -> {
+        playerCache.getActiveQuestEntrySet().forEach(entry -> {
             redisPlayerData.updateRedisFromLocalCache(entry.getKey(), entry.getValue());
         });
     }

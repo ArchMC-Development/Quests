@@ -10,8 +10,10 @@ import com.codepunisher.quests.commands.QuestsCommand;
 import com.codepunisher.quests.commands.lib.CommandRegistrar;
 import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestDatabase;
+import com.codepunisher.quests.database.QuestPlayerStorageDatabase;
 import com.codepunisher.quests.database.QuestSignDatabase;
 import com.codepunisher.quests.database.impl.QuestDatabaseImpl;
+import com.codepunisher.quests.database.impl.QuestPlayerStorageDataImpl;
 import com.codepunisher.quests.database.impl.QuestSignDatabaseImpl;
 import com.codepunisher.quests.expansions.QuestsExpansion;
 import com.codepunisher.quests.listeners.PlayerJoinLeaveListener;
@@ -36,11 +38,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
-// TODO: Add logging throughout the plugin when things happen
 // TODO: configurations (async)
 // TODO: clean code where can (clean main class?)
 // TODO: tests
 // TODO: make look pretty
+// TODO: Add at least 2 language (en/german) maybe more, and test
 // TODO: remove unnecessary shades/dependencies/clean pom
 // TODO: put on github (pretty read me) and a jar file
 public class QuestsPlugin extends JavaPlugin {
@@ -51,22 +53,25 @@ public class QuestsPlugin extends JavaPlugin {
   @Override
   public void onEnable() {
     //
-    // ----- ( CONFIGURATION ) -----
-    //
-    QuestsConfig questsConfig = new QuestsConfig();
-    questsConfig.reload(this);
-
-    //
     // ----- ( CACHES ) -----
     //
     QuestCache questCache = new QuestCache();
     QuestSignCache signCache = new QuestSignCache();
     playerCache = new QuestPlayerCache();
+    getLogger().info("Quests caches loaded...");
+
+    //
+    // ----- ( CONFIGURATION ) -----
+    //
+    QuestsConfig questsConfig = new QuestsConfig(playerCache);
+    questsConfig.reload(this);
+    getLogger().info("Quests config loaded...");
 
     //
     // ----- ( GSON TYPE ADAPTER ) -----
     //
     Gson gson = new GsonBuilder().registerTypeAdapter(Quest.class, new QuestAdapter()).create();
+    getLogger().info("Quests gson loaded...");
 
     //
     // ----- ( DATABASE ) -----
@@ -90,6 +95,12 @@ public class QuestsPlugin extends JavaPlugin {
               locations.forEach(signCache::add);
             });
 
+    QuestPlayerStorageDatabase storageDatabase =
+        new QuestPlayerStorageDataImpl(this, hikariDataSource);
+    storageDatabase.createTable();
+
+    getLogger().info("Quests databases loaded...");
+
     //
     // ----- ( REDIS ) -----
     //
@@ -104,6 +115,7 @@ public class QuestsPlugin extends JavaPlugin {
               quests.forEach(questCache::addActiveQuest);
             });
     ProtonManager proton = ProtonProvider.get();
+    getLogger().info("Quests redis loaded...");
 
     //
     // ----- ( TASK TIMERS ) -----
@@ -119,8 +131,9 @@ public class QuestsPlugin extends JavaPlugin {
 
     getServer()
         .getScheduler()
-        .runTaskTimer(
-            this, new SignUpdateTaskTimer(questCache, playerCache, signCache), 20L, 20L);
+        .runTaskTimer(this, new SignUpdateTaskTimer(questCache, playerCache, signCache), 20L, 20L);
+
+    getLogger().info("Quests task timers loaded...");
 
     //
     // ----- ( SUB COMMANDS ) -----
@@ -128,15 +141,19 @@ public class QuestsPlugin extends JavaPlugin {
     QuestSubCommandCache subCommandCache = new QuestSubCommandCache();
     QuestSubCommandRegistrar subCommandRegistrar =
         new QuestSubCommandRegistrar(
+            this,
+            questsConfig,
             subCommandCache,
             questCache,
             playerCache,
             questDatabase,
+            storageDatabase,
             redisActiveQuests,
             redisPlayerData,
             proton,
             gson);
     subCommandRegistrar.register();
+    getLogger().info("Quests sub commands loaded...");
 
     //
     // ----- ( MAIN QUEST COMMAND ) -----
@@ -148,8 +165,10 @@ public class QuestsPlugin extends JavaPlugin {
         .forEach(
             (key, langCmd) -> {
               commandRegistrar.registerCommands(
-                  questsCommand, langCmd.getPrimaryCommands().toArray(new String[0]));
+                  questsCommand, langCmd.getLangCmd().getPrimaryCommands().toArray(new String[0]));
             });
+
+    getLogger().info("Quests primary command loaded...");
 
     //
     // ----- ( LISTENER ) -----
@@ -159,11 +178,13 @@ public class QuestsPlugin extends JavaPlugin {
         new PlayerJoinLeaveListener(this, questCache, playerCache, redisPlayerData), this);
     pluginManager.registerEvents(new QuestTrackingListener(this, playerCache, questCache), this);
     pluginManager.registerEvents(new SignChangeListener(signDatabase, signCache), this);
+    getLogger().info("Quests listeners loaded...");
 
     //
     // ----- ( FASTINV REGISTRY ) -----
     //
     FastInvManager.register(this);
+    getLogger().info("Quests fastinv loaded...");
 
     //
     // ----- ( PlaceholderAPI ) -----
@@ -177,13 +198,16 @@ public class QuestsPlugin extends JavaPlugin {
   @Override
   public void onDisable() {
     hikariDataSource.close();
+    getLogger().info("Quests database closed...");
 
     // This allows the plugin to be plugman reloadable
     playerCache
-        .getEntrySet()
+        .getActiveQuestEntrySet()
         .forEach(
             entry -> {
               redisPlayerData.updateRedisFromLocalCache(entry.getKey(), entry.getValue());
             });
+
+    getLogger().info("Quests player cached dumped to redis...");
   }
 }
