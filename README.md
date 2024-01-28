@@ -386,3 +386,6 @@ server: test
 ```
 #
 ### Dependencies
+```proton``` this is a hard dependency as it is used for redis message brokering https://www.spigotmc.org/resources/proton-cross-server-plugin-messaging.87159/
+
+```PlaceholderAPI``` this is completely optional https://www.spigotmc.org/resources/placeholderapi.6245/
