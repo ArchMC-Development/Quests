@@ -14,6 +14,7 @@ Want to skip all the details and just add/test a quest? Here's examples of a com
 After you have added these quests, but sure to execute ```/quest reset``` to refresh the quest active cycle. Now
 you can join a quest via ```/quest menu``` and enjoy :D
 
+
 ### Commands
 Commands are fully configurable in the config, but here's the default format of the commands.
 
@@ -29,16 +30,23 @@ Commands are fully configurable in the config, but here's the default format of 
 
 ![Screenshot 2024-01-28 035427](https://github.com/TrevorMickelson/Quests/assets/70197204/ceb40ce3-cb16-41b2-b372-3cec0962469c)
 
+
 ### Signs
+
 
 ### Multi-instance
 To top it all off, this plugin works in a mult-instanced server environment! This means that multiple servers can use it and interact with the same database no problem! But wait! There's more! It also works with redis! This plugin has been designed to use redis as a caching layer, and a message broker to properly balance the syncing of multiple servers.
 
+
 ### Multi-language
 Mult-language support has been implemented via lang files in the lang folder. By default there is english and german. A player can select their language via ```/quest language <lang>```
 
+
 ### PlaceholderAPI
+
 
 ### Configs
 
+
 ### Dependencies
+
