@@ -13,11 +13,12 @@ import lombok.AllArgsConstructor;
 import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.message.MessageHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -69,13 +70,13 @@ public class QuestResetSubCommand implements QuestsSubCommand {
   private void randomizeValuesForEachQuestAndCacheAsActive() {
     Random random = new Random();
     int counter = 0;
-    for (Quest quest : questCache.getQuests()) {
-      if (counter >= questsConfig.getRandomizedPoolAmount()) {
-        break;
-      }
+    List<Quest> availableQuests = new ArrayList<>(questCache.getQuests());
 
-      int randomRequirement =
-          random.nextInt((quest.getMax() - quest.getMin()) + 1) + quest.getMin();
+    while (counter < 3 && !availableQuests.isEmpty()) {
+      int randomIndex = random.nextInt(availableQuests.size());
+      Quest quest = availableQuests.remove(randomIndex);
+
+      int randomRequirement = random.nextInt((quest.getMax() - quest.getMin()) + 1) + quest.getMin();
       questCache.addActiveQuest(quest.getId(), randomRequirement);
 
       counter++;
@@ -85,7 +86,6 @@ public class QuestResetSubCommand implements QuestsSubCommand {
   private void informOnlinePlayersAboutReset() {
     for (Player player : Bukkit.getOnlinePlayers()) {
       player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getQuestsResetToPlayers()));
-      player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.75f, 1.5f);
     }
   }
 }

@@ -38,12 +38,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
-// TODO: put on github (pretty read me) and a jar file
-
-// TODO: ----- ( BACK BURNER ) -----
-// TODO: make sure block place/break considers if the block has already been broken or placed
-// TODO: add quest kill mobs type
-// TODO: api
 public class QuestsPlugin extends JavaPlugin {
   private HikariDataSource hikariDataSource;
   private QuestPlayerCache playerCache;
