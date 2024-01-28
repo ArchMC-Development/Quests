@@ -38,6 +38,20 @@ To top it all off, this plugin works in a mult-instanced server environment! Thi
 Mult-language support has been implemented via lang files in the lang folder. By default there is english and german. A player can select their language via ```/quest language <lang>```
 #
 ### PlaceholderAPI
+Just when you thought it couldn't get any better, PLACEHOLDER API SUPPORT IS HERE! Here are the following placeholders.
+```quests_current_id```
+
+```current_type```
+
+```current_associated_object```
+
+```current_progress```
+
+```current_requirement```
+
+```current_active_completed```
+
+```current_active_requirement```
 #
 ### Configs
 #
