@@ -9,7 +9,7 @@ Want to skip all the details and just add/test a quest? Here's examples of a com
 
 ```/quest add emmy crafting emerald_block 1 30 quest.emmy give %player% diamond 1,give %player% apple 1```
 
-```/quest add emmy block_break dirt 15 100 quest.dirt give %player% diamond 1,give %player% apple 1```
+```/quest add dirt block_break dirt 15 100 quest.dirt give %player% diamond 1,give %player% apple 1```
 
 After you have added these quests, but sure to execute ```/quest reset``` to refresh the quest active cycle. Now
 you can join a quest via ```/quest menu``` and enjoy :D
