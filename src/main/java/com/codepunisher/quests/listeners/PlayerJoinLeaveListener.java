@@ -2,6 +2,7 @@ package com.codepunisher.quests.listeners;
 
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
+import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.util.UtilChat;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PlayerJoinLeaveListener implements Listener {
   private final JavaPlugin plugin;
+  private final QuestsConfig questsConfig;
   private final QuestCache questCache;
   private final QuestPlayerCache playerCache;
   private final RedisPlayerData redisPlayerData;
@@ -40,7 +42,6 @@ public class PlayerJoinLeaveListener implements Listener {
                             .ifPresent(
                                 playerData -> {
                                   removeQuestFromPlayerIfNoLongerExists(player, playerData);
-                                  sendCurrentQuestData(player, playerData);
                                 });
                       });
             });
@@ -58,23 +59,14 @@ public class PlayerJoinLeaveListener implements Listener {
             });
   }
 
-  private void removeQuestFromPlayerIfNoLongerExists(Player player, ActiveQuestPlayerData playerData) {
+  private void removeQuestFromPlayerIfNoLongerExists(
+      Player player, ActiveQuestPlayerData playerData) {
     boolean questWasRemoved =
         questCache.getQuest(playerData.getCurrentQuestId()).isEmpty()
             && !playerData.getCurrentQuestId().isEmpty();
     if (questWasRemoved) {
       playerData.optOutOfCurrentQuestId();
-      player.sendMessage(
-          UtilChat.colorize("&cThe quest you were in has been deleted by an admin!"));
+      player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getQuestDeletedByAdmin()));
     }
-  }
-
-  private void sendCurrentQuestData(Player player, ActiveQuestPlayerData playerData) {
-    questCache
-        .getQuest(playerData.getCurrentQuestId())
-        .ifPresent(
-            quest -> {
-              player.sendMessage(UtilChat.colorize("&aYour current quest: " + quest.getId()));
-            });
   }
 }

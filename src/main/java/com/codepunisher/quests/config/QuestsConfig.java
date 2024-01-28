@@ -8,9 +8,11 @@ import com.zaxxer.hikari.HikariConfig;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +28,13 @@ public class QuestsConfig {
   private final QuestPlayerCache playerCache;
 
   @Getter private HikariConfig hikariConfig;
+  @Getter private JedisPool jedisPool;
   @Getter private boolean displayMenuWhenNoArguments;
   @Getter private int randomizedPoolAmount;
+  @Getter private String signCreatePermission;
+  @Getter private Sound questCompleteSound;
+  @Getter private List<String> questCompleteAllRewards;
+  @Getter private String server;
 
   public QuestsConfig(QuestPlayerCache playerCache) {
     this.languageCommandMap = new HashMap<>();
@@ -41,8 +48,10 @@ public class QuestsConfig {
               new File(plugin.getDataFolder(), "config.yml"),
               Objects.requireNonNull(plugin.getResource("config.yml")));
 
+      loadServerSetting(plugin);
       loadGenericConfigSettings(defaultConfig);
       loadHikariConfig(defaultConfig);
+      loadRedisPool(defaultConfig);
       loadAllMessageYamlIntoCache(defaultConfig, plugin);
     } catch (IOException e) {
       plugin.getLogger().severe("Error in yaml configuration " + e.getMessage());
@@ -75,7 +84,19 @@ public class QuestsConfig {
     return languageCommandMap.get("en.yml");
   }
 
+  private void loadServerSetting(JavaPlugin plugin) throws IOException {
+    YamlDocument serverConfig =
+        YamlDocument.create(
+            new File(plugin.getDataFolder(), "server.yml"),
+            Objects.requireNonNull(plugin.getResource("server.yml")));
+    server = serverConfig.getString("server");
+  }
+
   private void loadGenericConfigSettings(YamlDocument defaultConfig) {
+    signCreatePermission = defaultConfig.getString("SignCreatePermission");
+    questCompleteSound =
+        Sound.valueOf(defaultConfig.getString("QuestsCompleteSound").toUpperCase());
+    questCompleteAllRewards = defaultConfig.getStringList("QuestsCompletedAllRewards");
     randomizedPoolAmount = defaultConfig.getInt("RandomizedPoolAmount");
     displayMenuWhenNoArguments = defaultConfig.getBoolean("DisplayMenuWhenNoArguments");
   }
@@ -93,6 +114,11 @@ public class QuestsConfig {
     config.setPassword(password);
 
     this.hikariConfig = config;
+  }
+
+  private void loadRedisPool(YamlDocument defaultConfig) {
+    this.jedisPool =
+        new JedisPool(defaultConfig.getString("redis.Host"), defaultConfig.getInt("redis.Port"));
   }
 
   // Loads if it does not exist, pulls if already exists
@@ -181,6 +207,18 @@ public class QuestsConfig {
     languageConfig.setQuestJoin(messageConfig.getString("messages.QuestJoin"));
     languageConfig.setQuestSwitch(messageConfig.getString("messages.QuestSwitch"));
     languageConfig.setQuestLeave(messageConfig.getString("messages.QuestLeave"));
+    languageConfig.setQuestSignConfiguration(
+        messageConfig.getString("messages.QuestSignConfiguration"));
+    languageConfig.setQuestCompleteTopTitle(
+        messageConfig.getString("messages.QuestsCompleteTopTitle"));
+    languageConfig.setQuestCompleteSubTitle(
+        messageConfig.getString("messages.QuestsCompleteSubTitle"));
+    languageConfig.setQuestCompletedAll(messageConfig.getString("messages.QuestsCompletedAll"));
+    languageConfig.setQuestProgressActionBar(
+        messageConfig.getString("messages.QuestsProgressActionBar"));
+    languageConfig.setQuestBossBar(messageConfig.getString("messages.QuestsBossBar"));
+    languageConfig.setQuestSignUpdate(messageConfig.getString("messages.QuestSignUpdate"));
+    languageConfig.setQuestSign(messageConfig.getStringList("messages.QuestSign"));
 
     languageCommandMap.put(langKey, languageConfig);
   }

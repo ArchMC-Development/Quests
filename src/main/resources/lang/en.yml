@@ -44,6 +44,9 @@ messages:
    - "%subcommands%"
    - "&7&m-------------------------"
 
+ # Sign (top line of sign)
+ QuestSignConfiguration: '[quest]'
+
  # ----- ( IMPORTANT INFORMATION ) -----
  # Menu types -> ARE_YOU_SURE_QUEST_DELETE, ARE_YOU_SURE_QUEST_LEAVE
  #               ARE_YOU_SURE_QUEST_SWITCH, ACTIVE_QUESTS_MENU
@@ -122,7 +125,7 @@ messages:
     Lore:
      - "&7Click to confirm"
     ButtonType: ARE_YOU_SURE_YES
-    Slots: [ 21 ]
+    Slots: [21]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
    2:
@@ -131,7 +134,7 @@ messages:
     Lore:
      - "&7Click to deny"
     ButtonType: ARE_YOU_SURE_NO
-    Slots: [ 23 ]
+    Slots: [23]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
 
@@ -150,7 +153,7 @@ messages:
     Lore:
      - "&7Click to confirm"
     ButtonType: ARE_YOU_SURE_YES
-    Slots: [ 21 ]
+    Slots: [21]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
    2:
@@ -159,7 +162,7 @@ messages:
     Lore:
      - "&7Click to deny"
     ButtonType: ARE_YOU_SURE_NO
-    Slots: [ 23 ]
+    Slots: [23]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
 
@@ -178,7 +181,7 @@ messages:
     Lore:
      - "&7Click to confirm"
     ButtonType: ARE_YOU_SURE_YES
-    Slots: [ 21 ]
+    Slots: [21]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
    2:
@@ -187,7 +190,7 @@ messages:
     Lore:
      - "&7Click to deny"
     ButtonType: ARE_YOU_SURE_NO
-    Slots: [ 23 ]
+    Slots: [23]
     ClickSound: UI_BUTTON_CLICK
     CloseOnClick: false
 
@@ -236,3 +239,16 @@ messages:
  QuestJoin: "&aYou have joined the quest &2%1%"
  QuestSwitch: "&aYou have switched to the quest &2%1%"
  QuestLeave: "&cYou have left the quest &4%1%"
+ QuestsCompleteTopTitle: "&aQuest Complete"
+ QuestsCompleteSubTitle: "&fCongratulations!"
+ QuestsCompletedAll: "&aYou completed all of the quests!"
+ QuestsProgressActionBar: "&aProgress for quest %1% &8(&f%2%&7/&f%3%&8)"
+ QuestsBossBar: "&a%1% &8(&f%2%&7/&f%3%&8)"
+ QuestSignUpdate: "&aSign successfully added!"
+
+ # Can only have 4 lines
+ QuestSign:
+  - "&aID &f%1%"
+  - "&aType &f%2%"
+  - "&aRequire &f%3%"
+  - "&aProgress &f%4%"

@@ -33,4 +33,12 @@ public class QuestsLanguageConfig {
     private String questJoin;
     private String questSwitch;
     private String questLeave;
+    private String questSignConfiguration;
+    private String questCompleteTopTitle;
+    private String questCompleteSubTitle;
+    private String questCompletedAll;
+    private String questProgressActionBar;
+    private String questBossBar;
+    private String questSignUpdate;
+    private List<String> questSign;
 }

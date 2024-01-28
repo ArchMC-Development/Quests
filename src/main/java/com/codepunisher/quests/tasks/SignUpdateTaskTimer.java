@@ -3,6 +3,7 @@ package com.codepunisher.quests.tasks;
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.cache.QuestSignCache;
+import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.models.LocationWrapper;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.ActiveQuestPlayerData;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 public class SignUpdateTaskTimer implements Runnable {
+  private final QuestsConfig questsConfig;
   private final QuestCache questCache;
   private final QuestPlayerCache playerCache;
   private final QuestSignCache questSignCache;
@@ -37,7 +39,8 @@ public class SignUpdateTaskTimer implements Runnable {
   }
 
   private void sendSignUpdateToPlayers(Player player, Location signLocation) {
-    Optional<ActiveQuestPlayerData> optionalPlayerData = playerCache.getActiveQuestPlayerData(player.getUniqueId());
+    Optional<ActiveQuestPlayerData> optionalPlayerData =
+        playerCache.getActiveQuestPlayerData(player.getUniqueId());
     if (optionalPlayerData.isEmpty()) {
       sendSignUpdate(player, signLocation, "none", "none", "none", "none");
       return;
@@ -69,10 +72,16 @@ public class SignUpdateTaskTimer implements Runnable {
 
   private void sendSignUpdate(Player player, Location signLocation, String... lines) {
     String[] updatedLines = new String[lines.length];
-    updatedLines[0] = UtilChat.colorize("&aID &f" + lines[0]);
-    updatedLines[1] = UtilChat.colorize("&aType &f" + lines[1]);
-    updatedLines[2] = UtilChat.colorize("&aRequire &f" + lines[2]);
-    updatedLines[3] = UtilChat.colorize("&aProgress &f" + lines[3]);
+    int counter = 0;
+    for (String line : questsConfig.getLang(player).getQuestSign()) {
+      updatedLines[counter] =
+          UtilChat.colorize(
+              line.replaceAll("%1%", lines[0])
+                  .replaceAll("%2%", lines[1])
+                  .replaceAll("%3%", lines[2])
+                  .replaceAll("%4%", lines[3]));
+      counter++;
+    }
     player.sendSignChange(signLocation, updatedLines);
   }
 }

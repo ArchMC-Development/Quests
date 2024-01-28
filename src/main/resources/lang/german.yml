@@ -1,0 +1,251 @@
+messages:
+  # # # # # # # # # #
+  # BEFEHLE         #
+  # # # # # # # # # #
+  commands:
+    # Der Haupt-Quest-Befehl/Abkürzungen
+    #
+    # Wenn einer dieser Befehle ausgeführt wird,
+    # werden die Befehle für die Tabulatorvervollständigung
+    # innerhalb dieser Datei sein, nicht in
+    # einer anderen Sprachdatei
+    QuestCommands:
+      - "aufgabe"
+
+    # Unterbefehle
+    ResetSubCommand:
+      Command: "zurücksetzen"
+      Usage: "Täglichen Zyklus der Quest zurücksetzen"
+    AddSubCommand:
+      Command: "hinzufügen"
+      Usage: "Neue Quest hinzufügen"
+    DeleteSubCommand:
+      Command: "löschen"
+      Usage: "Quest löschen"
+    MenuSubCommand:
+      Command: "menü"
+      Usage: "Menü für Quests öffnen"
+    LanguageSubCommand:
+      Command: "sprache"
+      Usage: "Befehl zum Ändern der Sprache"
+
+    # Quest sub command viewer
+    #
+    # %1% -> quest primary command
+    # %2% -> quest sub command
+    # %3% -> quest sub command usage
+    QuestSubCommandView: "&a/%1% %2% &8- &f%3%"
+
+    # %subcommands% -> Displays the above
+    QuestCommandsViewList:
+      - "&7&m-------------------------"
+      - "%subcommands%"
+      - "&7&m-------------------------"
+
+  # Schild (obere Zeile des Schilds)
+  QuestSignConfiguration: '[aufgabe]'
+
+  # ----- ( WICHTIGE INFORMATION ) -----
+  # Menütypen -> ARE_YOU_SURE_QUEST_DELETE, ARE_YOU_SURE_QUEST_LEAVE
+  #               ARE_YOU_SURE_QUEST_SWITCH, ACTIVE_QUESTS_MENU
+  # Buttentypen -> NONE, ARE_YOU_SURE_YES, ARE_YOU_SURE_NO, ACTIVE_QUESTS
+  # Sounds sind optional (just remove from configuration)
+  #
+  # # # # # # # # # # #
+  # ALLGEMEINES MENÜ  #
+  # # # # # # # # # # #
+  GenericBackGroundItems:
+    1:
+      Material: BLACK_STAINED_GLASS_PANE
+      Name: "&r"
+      Lore: []
+      MenuTypes:
+        - ARE_YOU_SURE_QUEST_DELETE
+        - ARE_YOU_SURE_QUEST_LEAVE
+        - ARE_YOU_SURE_QUEST_SWITCH
+        - ACTIVE_QUESTS_MENU
+      ButtonType: NONE
+      Slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 41, 42, 43, 44]
+      CloseOnClick: false
+    2:
+      Material: BARRIER
+      Name: "&c&lSchließen"
+      Lore:
+        - "&7Klicke, um zu schließen"
+      MenuTypes:
+        - ARE_YOU_SURE_QUEST_DELETE
+        - ARE_YOU_SURE_QUEST_LEAVE
+        - ARE_YOU_SURE_QUEST_SWITCH
+        - ACTIVE_QUESTS_MENU
+      ButtonType: NONE
+      Slots: [40]
+      ClickSound: UI_BUTTON_CLICK
+      CloseOnClick: true
+    3:
+      Material: OAK_SIGN
+      Name: "&c&lWARNUNG"
+      Lore:
+        - "&7Dies wird die Quest endgültig löschen!"
+        - "&7Wenn diese Quest aktiv ist, wird sie aus allen"
+        - "&7teilnehmenden Spielerinventaren entfernt!"
+      MenuTypes:
+        - ARE_YOU_SURE_QUEST_DELETE
+      ButtonType: NONE
+      Slots: [4]
+      CloseOnClick: false
+    4:
+      Material: OAK_SIGN
+      Name: "&c&lWARNUNG"
+      Lore:
+        - "&7Dies wird dich aus deiner"
+        - "&7aktiven Quest entfernen und alle"
+        - "&7damit verbundenen Fortschritte löschen!"
+      MenuTypes:
+        - ARE_YOU_SURE_QUEST_LEAVE
+        - ARE_YOU_SURE_QUEST_SWITCH
+      ButtonType: NONE
+      Slots: [4]
+      CloseOnClick: false
+
+  # # # # # # # # # # # # # # # # #
+  # BIST DU SICHER, MENÜ LÖSCHEN  #
+  # # # # # # # # # # # # # # # # #
+  QuestDeleteAreYouSureMenu:
+    Size: 45
+    Title: "Bist du sicher?"
+    OpenSound: ITEM_BOOK_PAGE_TURN
+    MenuType: ARE_YOU_SURE_QUEST_DELETE
+    GuiItems:
+      1:
+        Material: LIME_WOOL
+        Name: "&a&lJa"
+        Lore:
+          - "&7Klicke, um zu bestätigen"
+        ButtonType: ARE_YOU_SURE_YES
+        Slots: [21]
+        ClickSound: UI_BUTTON_CLICK
+        CloseOnClick: false
+      2:
+        Material: RED_WOOL
+        Name: "&c&lNein"
+        Lore:
+          - "&7Klicke, um abzulehnen"
+        ButtonType: ARE_YOU_SURE_NO
+        Slots: [23]
+        ClickSound: UI_BUTTON_CLICK
+        CloseOnClick: false
+
+  # # # # # # # # # # # # # # # # # #
+  # BIST DU SICHER, MENÜ VERLASSEN  #
+  # # # # # # # # # # # # # # # # # #
+  QuestLeaveAreYouSureMenu:
+    Size: 45
+    Title: "Bist du sicher?"
+    OpenSound: ITEM_BOOK_PAGE_TURN
+    MenuType: ARE_YOU_SURE_QUEST_LEAVE
+    GuiItems:
+      1:
+        Material: LIME_WOOL
+        Name: "&a&lJa"
+        Lore:
+          - "&7Klicke, um zu bestätigen"
+        ButtonType: ARE_YOU_SURE_YES
+        Slots: [21]
+        ClickSound: UI_BUTTON_CLICK
+        CloseOnClick: false
+      2:
+        Material: RED_WOOL
+        Name: "&c&lNein"
+        Lore:
+          - "&7Klicke, um abzulehnen"
+        ButtonType: ARE_YOU_SURE_NO
+        Slots: [23]
+        ClickSound: UI_BUTTON_CLICK
+        CloseOnClick: false
+
+  # # # # # # # # # # # # # # #
+  # ARE YOU SURE SWITCH MENU  #
+  # # # # # # # # # # # # # # #
+  QuestSwitchAreYouSureMenu:
+    Size: 45
+    Title: "Bist du sicher?"
+    OpenSound: ITEM_BOOK_PAGE_TURN
+    MenuType: ARE_YOU_SURE_QUEST_SWITCH
+    GuiItems:
+      1:
+        Material: LIME_WOOL
+        Name: "&a&lJa"
+        Lore:
+          - "&7Klicke, um zu bestätigen"
+        ButtonType: ARE_YOU_SURE_YES
+        Slots: [21]
+        ClickSound: UI_BUTTON_CLICK
+        CloseOnClick: false
+      2:
+        Material: RED_WOOL
+        Name: "&c&lNein"
+        Lore:
+          - "&7Klicke, um abzulehnen"
+        ButtonType: ARE_YOU_SURE_NO
+        Slots: [23]
+        ClickSound: UI_BUTTON_CLICK
+        CloseOnClick: false
+
+  # # # # # # # # # # # #
+  # AKTIVES QUEST-MENÜ  #
+  # # # # # # # # # # # #
+  ActiveQuestsMenu:
+    Size: 45
+    Title: "Aktive Quests"
+    # Das Menü hat nur ein einziges Element
+    #
+    # Anzeigeplatzhalter
+    # %quest_id%, %quest_type%, %quest_associated_object%
+    # %quest_current_progress%, %quest_required_progress%
+    # %quest_color%, %quest_click_action%
+    Name: "%quest_color%&l%quest_id%"
+    Lore:
+      - "&8Quest-Daten"
+      - ""
+      - "%quest_color%Informationen"
+      - "%quest_color%│ &7Typ: &f%quest_type%"
+      - "%quest_color%│ &7Voraussetzung: &f%quest_associated_object%"
+      - "%quest_color%│ &7Fortschritt: &8(&f%quest_current_progress%&7/&f%quest_required_progress%&8)"
+      - ""
+      - "&8➜ Klicke, um %quest_click_action%"
+    JoinSound: UI_BUTTON_CLICK
+    LeaveSound: UI_BUTTON_CLICK
+    SwitchSound: UI_BUTTON_CLICK
+    OpenSound: ITEM_BOOK_PAGE_TURN
+
+  # # # # # # # # # # # # # #
+  # ALLGEMEINE NACHRICHTEN  #
+  # # # # # # # # # # # # # #
+  CommandDoesNotExist: "&cDieser Befehl existiert nicht!"
+  NoPermission: "&cDu hast keine Berechtigung, dies zu tun!"
+  NoConsole: "&cNur Spieler können diesen Befehl ausführen!"
+  QuestDeleted: "&aDu hast die Quest gelöscht: &2%1%"
+  QuestDeletedByAdmin: "&cDie Quest, an der du teilgenommen hast, wurde von einem Admin gelöscht!"
+  QuestDoesNotExist: "&cDiese Quest existiert nicht! Hier sind alle verfügbaren Quests: %1%"
+  LanguageDoesNotExist: "&cDiese Sprache existiert nicht! Mögliche Optionen: %1%"
+  LanguageChangeSuccess: "&aSprache erfolgreich zu &2%1% geändert!"
+  QuestsResetSuccess: "&aErfolgreich zurückgesetzt und aktualisiert!"
+  QuestsResetToPlayers: "&aQuests wurden zurückgesetzt!"
+  QuestAddSuccess: "&aQuests erfolgreich hinzugefügt: &2%1%"
+  InvalidQuestAddUsage: "&cUngültige Verwendung: %1%"
+  QuestJoin: "&aDu bist der Quest beigetreten: &2%1%"
+  QuestSwitch: "&aDu hast zur Quest gewechselt: &2%1%"
+  QuestLeave: "&cDu hast die Quest verlassen: &4%1%"
+  QuestsCompleteTopTitle: "&aQuest abgeschlossen"
+  QuestsCompleteSubTitle: "&fHerzlichen Glückwunsch!"
+  QuestsCompletedAll: "&aDu hast alle Quests abgeschlossen!"
+  QuestsProgressActionBar: "&aFortschritt für Quest %1% &8(&f%2%&7/&f%3%&8)"
+  QuestsBossBar: "&a%1% &8(&f%2%&7/&f%3%&8)"
+  QuestSignUpdate: "&aSchild erfolgreich hinzugefügt!"
+
+  # Kann nur 4 Zeilen haben
+  QuestSign:
+    - "&aID &f%1%"
+    - "&aTyp &f%2%"
+    - "&aErforderlich &f%3%"
+    - "&aFortschritt &f%4%"

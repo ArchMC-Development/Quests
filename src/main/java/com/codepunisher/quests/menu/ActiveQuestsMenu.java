@@ -153,6 +153,8 @@ public class ActiveQuestsMenu extends AbstractMenu {
 
     if (!hasJoined && !isCompleted && isCurrentlyJoinedToAQuest) clickAction = "switch";
 
+    if (isCompleted && !isCurrentlyJoinedToAQuest) clickAction = "do nothing";
+
     return input
         .replaceAll("%quest_id%", UtilChat.capitalize(quest.getId()))
         .replaceAll("%quest_type%", UtilChat.capitalize(quest.getQuestType().name()))

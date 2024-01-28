@@ -8,6 +8,7 @@
 # are no languages configured
 lang:
   - en.yml
+  - german.yml
 
 # If this is set to true, then when
 # a player executes the configured
@@ -22,6 +23,14 @@ DisplayMenuWhenNoArguments: false
 # from the total quests pull when
 # the quests are reset
 RandomizedPoolAmount: 3
+
+# Sign
+SignCreatePermission: "quests.createsign"
+
+# Quest completion
+QuestsCompleteSound: ENTITY_PLAYER_LEVELUP
+QuestsCompletedAllRewards:
+  - "give %player% diamond 1"
 
 # # # # # # # # # #
 # COMMANDS        #
@@ -38,9 +47,15 @@ commands:
   LanguageSubCommand:
     Permission: "quests.language"
 
+# database
 mysql:
   Host: localhost
   Port: 3306
   Username: root
   Password: Feel4-Probation6-Untagged2-Slicing1
   Database: test
+
+# redis
+redis:
+  Host: localhost
+  Port: 6379

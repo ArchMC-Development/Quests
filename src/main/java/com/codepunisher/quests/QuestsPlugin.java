@@ -38,17 +38,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
-// TODO: configurations (async)
-// TODO: tests
-// TODO: Add at least 2 language (en/german) maybe more, and test
-// TODO: remove unnecessary shades/dependencies/clean pom (remove package location)
 // TODO: put on github (pretty read me) and a jar file
 
 // TODO: ----- ( BACK BURNER ) -----
-// TODO: clean code where can (clean main class?)
-// TODO: make look pretty
 // TODO: make sure block place/break considers if the block has already been broken or placed
 // TODO: add quest kill mobs type
+// TODO: api
 public class QuestsPlugin extends JavaPlugin {
   private HikariDataSource hikariDataSource;
   private QuestPlayerCache playerCache;
@@ -90,7 +85,8 @@ public class QuestsPlugin extends JavaPlugin {
               quests.forEach(questCache::add);
             });
 
-    QuestSignDatabase signDatabase = new QuestSignDatabaseImpl(this, hikariDataSource);
+    QuestSignDatabase signDatabase =
+        new QuestSignDatabaseImpl(this, questsConfig, hikariDataSource);
     signDatabase.createSignTable();
     signDatabase
         .getSignLocations()
@@ -108,7 +104,7 @@ public class QuestsPlugin extends JavaPlugin {
     //
     // ----- ( REDIS ) -----
     //
-    JedisPool jedisPool = new JedisPool("localhost", 6379);
+    JedisPool jedisPool = questsConfig.getJedisPool();
     RedisActiveQuests redisActiveQuests = new RedisActiveQuestsImpl(this, questCache, jedisPool);
     redisPlayerData = new RedisPlayerDataImpl(this, playerCache, jedisPool, gson);
     Bukkit.getOnlinePlayers().forEach(redisPlayerData::loadRedisDataIntoLocalCache);
@@ -135,7 +131,11 @@ public class QuestsPlugin extends JavaPlugin {
 
     getServer()
         .getScheduler()
-        .runTaskTimer(this, new SignUpdateTaskTimer(questCache, playerCache, signCache), 20L, 20L);
+        .runTaskTimer(
+            this,
+            new SignUpdateTaskTimer(questsConfig, questCache, playerCache, signCache),
+            20L,
+            20L);
 
     getLogger().info("Quests task timers loaded...");
 
@@ -179,9 +179,12 @@ public class QuestsPlugin extends JavaPlugin {
     //
     PluginManager pluginManager = getServer().getPluginManager();
     pluginManager.registerEvents(
-        new PlayerJoinLeaveListener(this, questCache, playerCache, redisPlayerData), this);
-    pluginManager.registerEvents(new QuestTrackingListener(this, playerCache, questCache), this);
-    pluginManager.registerEvents(new SignChangeListener(signDatabase, signCache), this);
+        new PlayerJoinLeaveListener(this, questsConfig, questCache, playerCache, redisPlayerData),
+        this);
+    pluginManager.registerEvents(
+        new QuestTrackingListener(this, questsConfig, playerCache, questCache), this);
+    pluginManager.registerEvents(
+        new SignChangeListener(questsConfig, signDatabase, signCache), this);
     getLogger().info("Quests listeners loaded...");
 
     //

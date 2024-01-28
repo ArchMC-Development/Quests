@@ -2,6 +2,7 @@ package com.codepunisher.quests.listeners;
 
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
+import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.models.QuestType;
@@ -32,6 +33,7 @@ import java.util.*;
 public class QuestTrackingListener implements Listener {
   private final Map<UUID, BossBar> bossBarMap = new HashMap<>();
   private final JavaPlugin plugin;
+  private final QuestsConfig questsConfig;
   private final QuestPlayerCache playerCache;
   private final QuestCache questCache;
 
@@ -125,8 +127,10 @@ public class QuestTrackingListener implements Listener {
     // Quest completion
     int progress = playerData.getCurrentQuestProgress();
     if (progress >= requirement) {
-      player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.75f, 1.75f);
-      player.sendTitle(UtilChat.colorize("&aQuest Complete"), UtilChat.colorize("good job!!!"));
+      player.playSound(player.getLocation(), questsConfig.getQuestCompleteSound(), 0.35f, 1.25f);
+      player.sendTitle(
+          UtilChat.colorize(questsConfig.getLang(player).getQuestCompleteTopTitle()),
+          UtilChat.colorize(questsConfig.getLang(player).getQuestCompleteSubTitle()));
       playerData.setCurrentQuestIdAsCompleted();
       Arrays.stream(quest.getRewards())
           .forEach(
@@ -138,16 +142,25 @@ public class QuestTrackingListener implements Listener {
       // Checking if they've completed all daily quests (new rewards)
       if (playerData.getCompletedDailyQuests().size()
           >= questCache.getActiveQuestsEntrySet().size()) {
-        player.sendMessage(UtilChat.colorize("&aOmg you totally completed all quests!"));
-        player.getInventory().addItem(new ItemStack(Material.DIAMOND_BLOCK, 64));
+        player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getQuestCompletedAll()));
+        questsConfig
+            .getQuestCompleteAllRewards()
+            .forEach(
+                reward -> {
+                  Bukkit.dispatchCommand(
+                      Bukkit.getConsoleSender(), reward.replaceAll("%player%", player.getName()));
+                });
       }
     }
 
     player.sendActionBar(
         UtilChat.colorize(
-            String.format(
-                "&aTotal broken for quest: &8(&f%s&7/&f%s&8)",
-                Math.min(progress, requirement), requirement)));
+            questsConfig
+                .getLang(player)
+                .getQuestProgressActionBar()
+                .replaceAll("%1%", questId)
+                .replaceAll("%2%", Math.min(progress, requirement) + "")
+                .replaceAll("%3%", requirement + "")));
   }
 
   /**
@@ -163,28 +176,43 @@ public class QuestTrackingListener implements Listener {
       bossBar.removePlayer(player);
     }
 
+    Optional<Integer> optionalInteger = questCache.getRequirement(playerData.getCurrentQuestId());
+    if (optionalInteger.isEmpty()) {
+      return;
+    }
+
     // Creating new boss bar/displaying
-    BossBar newBossBar = Bukkit.createBossBar(
-            UtilChat.colorize("&a" + playerData.getCurrentQuestId()),
+    BossBar newBossBar =
+        Bukkit.createBossBar(
+            UtilChat.colorize(
+                questsConfig
+                    .getLang(player)
+                    .getQuestBossBar()
+                    .replaceAll("%1%", playerData.getCurrentQuestId())
+                    .replaceAll("%2%", playerData.getCurrentQuestProgress() + "")
+                    .replaceAll("%3%", optionalInteger.get() + "")),
             BarColor.GREEN,
             BarStyle.SOLID);
 
     newBossBar.setVisible(true);
     bossBarMap.put(uuid, newBossBar);
 
-    questCache.getRequirement(playerData.getCurrentQuestId()).ifPresent(requirement -> {
-      int currentProgress = playerData.getCurrentQuestProgress();
-      double completionPercentage = (double) currentProgress / requirement;
-      double normalizedProgress = Math.min(1.0, Math.max(0.0, completionPercentage));
-      newBossBar.setProgress(normalizedProgress);
-    });
-
+    int currentProgress = playerData.getCurrentQuestProgress();
+    double completionPercentage = (double) currentProgress / optionalInteger.get();
+    double normalizedProgress = Math.min(1.0, Math.max(0.0, completionPercentage));
+    newBossBar.setProgress(normalizedProgress);
     newBossBar.addPlayer(player);
 
     // Removing after 3 seconds (if not already removed)
-    plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-      newBossBar.removePlayer(player);
-    }, 60L);
+    plugin
+        .getServer()
+        .getScheduler()
+        .runTaskLater(
+            plugin,
+            () -> {
+              newBossBar.removePlayer(player);
+            },
+            60L);
   }
 
   private int getMaxCraftAmount(CraftingInventory inv) {

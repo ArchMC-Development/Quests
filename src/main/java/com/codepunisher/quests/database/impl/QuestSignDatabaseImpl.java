@@ -1,5 +1,6 @@
 package com.codepunisher.quests.database.impl;
 
+import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestSignDatabase;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AllArgsConstructor;
@@ -15,8 +16,8 @@ import java.util.concurrent.CompletableFuture;
 
 @AllArgsConstructor
 public class QuestSignDatabaseImpl implements QuestSignDatabase {
-  private static final String SERVER_NAME = "test";
   private final JavaPlugin plugin;
+  private final QuestsConfig questsConfig;
   private final HikariDataSource hikariDataSource;
 
   @Override
@@ -64,7 +65,7 @@ public class QuestSignDatabaseImpl implements QuestSignDatabase {
 
                 try (PreparedStatement preparedStatement =
                     connection.prepareStatement(insertQuery)) {
-                  preparedStatement.setString(1, SERVER_NAME);
+                  preparedStatement.setString(1, questsConfig.getServer());
                   preparedStatement.setString(2, location.getWorld().getName());
                   preparedStatement.setDouble(3, location.getX());
                   preparedStatement.setDouble(4, location.getY());
@@ -98,7 +99,7 @@ public class QuestSignDatabaseImpl implements QuestSignDatabase {
 
                 try (PreparedStatement preparedStatement =
                     connection.prepareStatement(deleteQuery)) {
-                  preparedStatement.setString(1, SERVER_NAME);
+                  preparedStatement.setString(1, questsConfig.getServer());
                   preparedStatement.setString(2, location.getWorld().getName());
                   preparedStatement.setDouble(3, location.getX());
                   preparedStatement.setDouble(4, location.getY());
@@ -147,7 +148,7 @@ public class QuestSignDatabaseImpl implements QuestSignDatabase {
                   List<Location> signLocations = new ArrayList<>();
                   while (resultSet.next()) {
                     String server = resultSet.getString("server");
-                    if (!server.equalsIgnoreCase(SERVER_NAME)) {
+                    if (!server.equalsIgnoreCase(questsConfig.getServer())) {
                       continue;
                     }
 
