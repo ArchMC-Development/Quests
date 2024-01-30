@@ -37,13 +37,13 @@ public class QuestTrackingListener implements Listener {
   private final QuestPlayerCache playerCache;
   private final QuestCache questCache;
 
-  @EventHandler
+  @EventHandler (ignoreCancelled = true)
   public void onBreak(BlockBreakEvent event) {
     handleQuestProgressIncrease(
         event.getPlayer(), QuestType.BLOCK_BREAK, event.getBlock().getType(), 1);
   }
 
-  @EventHandler
+  @EventHandler (ignoreCancelled = true)
   public void onCraft(CraftItemEvent event) {
     ItemStack test = event.getRecipe().getResult().clone();
     ClickType click = event.getClick();
