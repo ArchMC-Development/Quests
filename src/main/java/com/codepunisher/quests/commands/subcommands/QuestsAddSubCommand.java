@@ -15,6 +15,7 @@ import me.drepic.proton.common.message.MessageHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -58,13 +59,16 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
             UtilChat.colorize(
                 questsConfig.getLang(sender).getQuestAddSuccess().replaceAll("%1%", id)));
       } catch (RuntimeException e) {
+        String options = Arrays.toString(QuestType.values());
         sender.sendMessage(
             UtilChat.colorize(questsConfig.getLang(sender).getInvalidQuestAddUsage())
                 .replaceAll(
                     "%1%",
                     "/"
                         + call.getName()
-                        + " add <id> <type> <association> <min> <max> <permission> <console-command-rewards>"));
+                        + " add <id> "
+                        + options
+                        + " <association> <min> <max> <permission> <console-command-rewards>"));
       }
     };
   }

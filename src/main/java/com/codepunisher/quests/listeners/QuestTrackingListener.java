@@ -10,15 +10,17 @@ import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -37,13 +39,13 @@ public class QuestTrackingListener implements Listener {
   private final QuestPlayerCache playerCache;
   private final QuestCache questCache;
 
-  @EventHandler (ignoreCancelled = true)
+  @EventHandler(ignoreCancelled = true)
   public void onBreak(BlockBreakEvent event) {
     handleQuestProgressIncrease(
         event.getPlayer(), QuestType.BLOCK_BREAK, event.getBlock().getType(), 1);
   }
 
-  @EventHandler (ignoreCancelled = true)
+  @EventHandler(ignoreCancelled = true)
   public void onCraft(CraftItemEvent event) {
     ItemStack test = event.getRecipe().getResult().clone();
     ClickType click = event.getClick();
@@ -81,6 +83,16 @@ public class QuestTrackingListener implements Listener {
     Player player = (Player) event.getWhoClicked();
     handleQuestProgressIncrease(
         player, QuestType.CRAFTING, event.getRecipe().getResult().getType(), recipeAmount);
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onEntityDamage(EntityDamageByEntityEvent event) {
+    getPlayerDamager(event.getDamager())
+        .ifPresent(
+            player -> {
+              handleQuestProgressIncrease(
+                  player, QuestType.ENTITY_KILLER, event.getEntity().getType(), 1);
+            });
   }
 
   @EventHandler
@@ -188,7 +200,7 @@ public class QuestTrackingListener implements Listener {
                 questsConfig
                     .getLang(player)
                     .getQuestBossBar()
-                    .replaceAll("%1%", playerData.getCurrentQuestId())
+                    .replaceAll("%1%", UtilChat.capitalize(playerData.getCurrentQuestId()))
                     .replaceAll("%2%", playerData.getCurrentQuestProgress() + "")
                     .replaceAll("%3%", optionalInteger.get() + "")),
             BarColor.GREEN,
@@ -236,5 +248,28 @@ public class QuestTrackingListener implements Listener {
       else if (is.isSimilar(stack)) result += Math.max(stack.getMaxStackSize() - is.getAmount(), 0);
 
     return result;
+  }
+
+  private Optional<Player> getPlayerDamager(Entity damager) {
+    // If player hits target
+    if (damager instanceof Player player) {
+      return Optional.of(player);
+    }
+
+    // If projects hits target
+    if (damager instanceof Projectile projectile) {
+      if (projectile.getShooter() instanceof Player player) {
+        return Optional.of(player);
+      }
+    }
+
+    // If fishing hook hits player
+    if (damager instanceof FishHook fishHook) {
+      if (fishHook.getHookedEntity() instanceof Player player) {
+        return Optional.of(player);
+      }
+    }
+
+    return Optional.empty();
   }
 }

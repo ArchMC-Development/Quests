@@ -3,6 +3,9 @@ package com.codepunisher.quests.models;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Villager;
 
 @Getter
 @AllArgsConstructor
@@ -20,6 +23,18 @@ public class Quest {
       return material;
     }
 
+    if (associatedObject instanceof EntityType entityType) {
+      return Material.valueOf(getMobName(entityType) + "_SPAWN_EGG");
+    }
+
     return questType.getDefaultDisplay();
+  }
+
+  private String getMobName(EntityType entityType) {
+    if (entityType == EntityType.VILLAGER) {
+      return "VILLAGER";
+    }
+
+    return entityType.name().replace(" ", "_").toUpperCase();
   }
 }
