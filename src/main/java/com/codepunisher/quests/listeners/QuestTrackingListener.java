@@ -13,14 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.FishHook;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -86,13 +83,18 @@ public class QuestTrackingListener implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onEntityDamage(EntityDamageByEntityEvent event) {
-    getPlayerDamager(event.getDamager())
-        .ifPresent(
-            player -> {
-              handleQuestProgressIncrease(
-                  player, QuestType.ENTITY_KILLER, event.getEntity().getType(), 1);
-            });
+  public void onEntityDamage(EntityDeathEvent event) {
+    LivingEntity livingEntity = event.getEntity();
+    if (livingEntity instanceof Player) {
+      return;
+    }
+
+    Player killer = livingEntity.getKiller();
+    if (killer == null) {
+      return;
+    }
+
+    handleQuestProgressIncrease(killer, QuestType.ENTITY_KILLER, event.getEntity().getType(), 1);
   }
 
   @EventHandler
@@ -248,28 +250,5 @@ public class QuestTrackingListener implements Listener {
       else if (is.isSimilar(stack)) result += Math.max(stack.getMaxStackSize() - is.getAmount(), 0);
 
     return result;
-  }
-
-  private Optional<Player> getPlayerDamager(Entity damager) {
-    // If player hits target
-    if (damager instanceof Player player) {
-      return Optional.of(player);
-    }
-
-    // If projects hits target
-    if (damager instanceof Projectile projectile) {
-      if (projectile.getShooter() instanceof Player player) {
-        return Optional.of(player);
-      }
-    }
-
-    // If fishing hook hits player
-    if (damager instanceof FishHook fishHook) {
-      if (fishHook.getHookedEntity() instanceof Player player) {
-        return Optional.of(player);
-      }
-    }
-
-    return Optional.empty();
   }
 }
