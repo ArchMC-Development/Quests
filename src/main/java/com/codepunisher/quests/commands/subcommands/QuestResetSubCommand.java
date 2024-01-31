@@ -72,7 +72,7 @@ public class QuestResetSubCommand implements QuestsSubCommand {
     int counter = 0;
     List<Quest> availableQuests = new ArrayList<>(questCache.getQuests());
 
-    while (counter < 3 && !availableQuests.isEmpty()) {
+    while (counter < questsConfig.getRandomizedPoolAmount() && !availableQuests.isEmpty()) {
       int randomIndex = random.nextInt(availableQuests.size());
       Quest quest = availableQuests.remove(randomIndex);
 
