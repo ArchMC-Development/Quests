@@ -162,7 +162,7 @@ public class ActiveQuestsMenu extends AbstractMenu {
             "%quest_associated_object%",
             UtilChat.capitalize(
                 quest.getQuestType().getInputFromAssociatedObject(quest.getAssociatedObject())))
-        .replaceAll("%quest_current_progress%", playerData.getCurrentQuestProgress() + "")
+        .replaceAll("%quest_current_progress%", playerData.getCurrentQuestProgress(quest) + "")
         .replaceAll("%quest_required_progress%", activeQuestRequirement + "")
         .replaceAll("%quest_color%", color)
         .replaceAll("%quest_click_action%", clickAction);

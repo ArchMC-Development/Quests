@@ -26,4 +26,12 @@ public class ActiveQuestPlayerData {
     currentQuestId = "";
     currentQuestProgress = 0;
   }
+
+  public int getCurrentQuestProgress(Quest quest) {
+    if (quest.getId().equalsIgnoreCase(currentQuestId)) {
+      return currentQuestProgress;
+    }
+
+    return 0;
+  }
 }
