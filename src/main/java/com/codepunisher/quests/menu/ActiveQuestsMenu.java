@@ -21,8 +21,8 @@ public class ActiveQuestsMenu extends AbstractMenu {
   private final QuestPlayerCache playerCache;
 
   public ActiveQuestsMenu(
-      Player player, QuestsConfig config, QuestCache questCache, QuestPlayerCache playerCache) {
-    super(player, config, config.getLang(player).getActiveQuestGuiInventory());
+      Player player, QuestsConfig config, QuestCache questCache, QuestPlayerCache playerCache, boolean... optionalPlayOpenSound) {
+    super(player, config, config.getLang(player).getActiveQuestGuiInventory(), optionalPlayOpenSound);
     this.playerCache = playerCache;
 
     for (Map.Entry<String, Integer> entry : questCache.getActiveQuestsEntrySet()) {
@@ -110,7 +110,7 @@ public class ActiveQuestsMenu extends AbstractMenu {
             player.sendMessage(
                 UtilChat.colorize(
                     config.getLang(player).getQuestJoin().replaceAll("%1%", quest.getId())));
-            new ActiveQuestsMenu(player, config, questCache, playerCache).open(player);
+            new ActiveQuestsMenu(player, config, questCache, playerCache, false).open(player);
           });
     }
   }
