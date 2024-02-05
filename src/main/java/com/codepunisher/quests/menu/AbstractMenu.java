@@ -17,10 +17,12 @@ import java.util.function.Consumer;
 public abstract class AbstractMenu extends FastInv {
   private final Map<ButtonType, Consumer<InventoryClickEvent>> clickHandlers = new HashMap<>();
   protected final GuiInventory guiInventory;
+  private final boolean playOpenSound;
 
-  public AbstractMenu(Player player, QuestsConfig config, GuiInventory guiInventory) {
+  public AbstractMenu(Player player, QuestsConfig config, GuiInventory guiInventory, boolean... optionalPlayOpenSound) {
     super(guiInventory.getSize(), UtilChat.colorize(guiInventory.getTitle()));
     this.guiInventory = guiInventory;
+    this.playOpenSound = optionalPlayOpenSound == null || optionalPlayOpenSound.length == 0;
 
     // Filling background (if the item matches the inventory type)
     config.getLang(player).getBackGroundItems().stream()
@@ -66,7 +68,7 @@ public abstract class AbstractMenu extends FastInv {
     super.open(player);
 
     // Gui open sound
-    if (guiInventory.getOpenSound() != null) {
+    if (guiInventory.getOpenSound() != null && playOpenSound) {
       player.playSound(player.getLocation(), guiInventory.getOpenSound(), 0.35f, 1.25f);
     }
   }
