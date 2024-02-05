@@ -57,7 +57,7 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
             .info(String.format("%s has been added by %s", quest.getId(), sender.getName()));
         sender.sendMessage(
             UtilChat.colorize(
-                questsConfig.getLang(sender).getQuestAddSuccess().replaceAll("%1%", id)));
+                questsConfig.getLang(sender).getQuestAddSuccess().replaceAll("%1%", id.replaceAll("_", " "))));
       } catch (RuntimeException e) {
         String options = Arrays.toString(QuestType.values());
         sender.sendMessage(

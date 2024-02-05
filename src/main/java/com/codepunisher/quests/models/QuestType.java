@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
-//TODO: Change to pure material checker?
 @Getter
 @AllArgsConstructor
 public enum QuestType {

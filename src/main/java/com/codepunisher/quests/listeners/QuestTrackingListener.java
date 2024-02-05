@@ -10,6 +10,7 @@ import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -123,9 +124,7 @@ public class QuestTrackingListener implements Listener {
     }
 
     // Checking if the associated type (material, etc.) matches
-    if (!questType
-        .getInputFromAssociatedObject(associatedObject)
-        .equalsIgnoreCase(questType.getInputFromAssociatedObject(quest.getAssociatedObject()))) {
+    if (!typesMatch(quest, associatedObject)) {
       return;
     }
 
@@ -167,14 +166,47 @@ public class QuestTrackingListener implements Listener {
       }
     }
 
+    String questActionBar = questsConfig.getLang(player).getQuestProgressActionBar();
+    if (questActionBar == null || questActionBar.isEmpty()) {
+      return;
+    }
+
     player.sendActionBar(
         UtilChat.colorize(
-            questsConfig
-                .getLang(player)
-                .getQuestProgressActionBar()
-                .replaceAll("%1%", questId)
+            questActionBar
+                .replaceAll("%1%", questId.replaceAll("_", " "))
                 .replaceAll("%2%", Math.min(progress, requirement) + "")
                 .replaceAll("%3%", requirement + "")));
+  }
+
+  /**
+   * Checking for type matching, but also adding custom type check aliases such as ore and template
+   * ore, and wood/logs
+   */
+  private <T> boolean typesMatch(Quest quest, T associatedObject) {
+    QuestType questType = quest.getQuestType();
+    String questAssociatedObjectString =
+        questType.getInputFromAssociatedObject(quest.getAssociatedObject()).toLowerCase();
+    String comparedAssociatedObjectString =
+        questType.getInputFromAssociatedObject(associatedObject).toLowerCase();
+
+    // Checking if they already match
+    boolean matches = questAssociatedObjectString.equals(comparedAssociatedObjectString);
+
+    // Checking for ore
+    if (questAssociatedObjectString.contains("ore")) {
+      return matches
+          || (("deepslate_" + questAssociatedObjectString).equals(comparedAssociatedObjectString));
+    }
+
+    // Checking for log/wood
+    if (questAssociatedObjectString.contains("log")) {
+      return matches
+          || ((questAssociatedObjectString.replace("_log", "_wood"))
+              .equals(comparedAssociatedObjectString));
+    }
+
+    return matches;
   }
 
   /**

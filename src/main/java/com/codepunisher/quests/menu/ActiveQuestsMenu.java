@@ -21,8 +21,13 @@ public class ActiveQuestsMenu extends AbstractMenu {
   private final QuestPlayerCache playerCache;
 
   public ActiveQuestsMenu(
-      Player player, QuestsConfig config, QuestCache questCache, QuestPlayerCache playerCache, boolean... optionalPlayOpenSound) {
-    super(player, config, config.getLang(player).getActiveQuestGuiInventory(), optionalPlayOpenSound);
+      Player player,
+      QuestsConfig config,
+      QuestCache questCache,
+      QuestPlayerCache playerCache,
+      boolean... optionalPlayOpenSound) {
+    super(
+        player, config, config.getLang(player).getActiveQuestGuiInventory(), optionalPlayOpenSound);
     this.playerCache = playerCache;
 
     for (Map.Entry<String, Integer> entry : questCache.getActiveQuestsEntrySet()) {
@@ -64,7 +69,7 @@ public class ActiveQuestsMenu extends AbstractMenu {
 
                         player.sendMessage(
                             UtilChat.colorize(config.getLang(player).getQuestLeave())
-                                .replaceAll("%1%", quest.getId()));
+                                .replaceAll("%1%", quest.getId().replaceAll("_", " ")));
                         new ActiveQuestsMenu(player, config, questCache, playerCache).open(player);
                       },
                       () -> {
@@ -81,6 +86,7 @@ public class ActiveQuestsMenu extends AbstractMenu {
                       config,
                       config.getLang(player).getAreYouSureSwitchInventory(),
                       () -> {
+                        playerData.optOutOfCurrentQuestId();
                         playerData.setCurrentQuestId(quest.getId());
                         playerCache.addActiveQuestUser(player.getUniqueId(), playerData);
 
@@ -90,7 +96,7 @@ public class ActiveQuestsMenu extends AbstractMenu {
 
                         player.sendMessage(
                             UtilChat.colorize(config.getLang(player).getQuestSwitch())
-                                .replaceAll("%1%", quest.getId()));
+                                .replaceAll("%1%", quest.getId().replaceAll("_", " ")));
                         new ActiveQuestsMenu(player, config, questCache, playerCache).open(player);
                       },
                       () -> {
@@ -109,7 +115,10 @@ public class ActiveQuestsMenu extends AbstractMenu {
 
             player.sendMessage(
                 UtilChat.colorize(
-                    config.getLang(player).getQuestJoin().replaceAll("%1%", quest.getId())));
+                    config
+                        .getLang(player)
+                        .getQuestJoin()
+                        .replaceAll("%1%", quest.getId().replaceAll("_", " "))));
             new ActiveQuestsMenu(player, config, questCache, playerCache, false).open(player);
           });
     }
