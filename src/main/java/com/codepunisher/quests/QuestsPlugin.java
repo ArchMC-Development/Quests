@@ -1,6 +1,8 @@
 package com.codepunisher.quests;
 
 import com.codepunisher.quests.adapters.QuestAdapter;
+import com.codepunisher.quests.api.QuestsAPI;
+import com.codepunisher.quests.api.QuestsApiImpl;
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.cache.QuestSignCache;
@@ -31,6 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.mrmicky.fastinv.FastInvManager;
+import lombok.Getter;
 import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.ProtonProvider;
 import org.bukkit.Bukkit;
@@ -39,6 +42,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
 public class QuestsPlugin extends JavaPlugin {
+  @Getter
+  private static QuestsAPI questsAPI;
   private HikariDataSource hikariDataSource;
   private QuestPlayerCache playerCache;
   private RedisPlayerData redisPlayerData;
@@ -52,6 +57,11 @@ public class QuestsPlugin extends JavaPlugin {
     QuestSignCache signCache = new QuestSignCache();
     playerCache = new QuestPlayerCache();
     getLogger().info("Quests caches loaded...");
+
+    //
+    // ----- ( API ) -----
+    //
+    questsAPI = new QuestsApiImpl(playerCache);
 
     //
     // ----- ( CONFIGURATION ) -----
