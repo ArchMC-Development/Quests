@@ -3,7 +3,9 @@ package com.codepunisher.quests.listeners;
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.config.QuestsConfig;
+import com.codepunisher.quests.database.QuestPlayerStorageDatabase;
 import com.codepunisher.quests.models.ActiveQuestPlayerData;
+import com.codepunisher.quests.models.PlayerStorageData;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
@@ -23,10 +25,12 @@ public class PlayerJoinLeaveListener implements Listener {
   private final QuestCache questCache;
   private final QuestPlayerCache playerCache;
   private final RedisPlayerData redisPlayerData;
+  private final QuestPlayerStorageDatabase playerStorageDatabase;
 
   @EventHandler
   public void onJoin(PlayerJoinEvent event) {
     Player player = event.getPlayer();
+    UUID uuid = player.getUniqueId();
     redisPlayerData
         .loadRedisDataIntoLocalCache(player)
         .thenRun(
@@ -38,18 +42,32 @@ public class PlayerJoinLeaveListener implements Listener {
                       plugin,
                       () -> {
                         playerCache
-                            .getActiveQuestPlayerData(player.getUniqueId())
+                            .getActiveQuestPlayerData(uuid)
                             .ifPresent(
                                 playerData -> {
                                   removeQuestFromPlayerIfNoLongerExists(player, playerData);
                                 });
                       });
             });
+
+    playerStorageDatabase
+        .read(uuid)
+        .thenAccept(
+            playerStorageData -> {
+              playerStorageData.ifPresentOrElse(
+                  storageData -> {
+                    playerCache.addPlayerStorage(uuid, storageData);
+                  },
+                  () -> {
+                    playerCache.addPlayerStorage(uuid, new PlayerStorageData());
+                  });
+            });
   }
 
   @EventHandler
   public void onQuit(PlayerQuitEvent event) {
     UUID uuid = event.getPlayer().getUniqueId();
+    playerCache.removePlayerStorage(uuid);
     playerCache
         .getActiveQuestPlayerData(uuid)
         .ifPresent(

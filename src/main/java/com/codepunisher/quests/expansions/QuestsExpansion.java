@@ -35,7 +35,13 @@ public class QuestsExpansion extends PlaceholderExpansion {
 
   @Override
   public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-    Optional<ActiveQuestPlayerData> dataOptional = playerCache.getActiveQuestPlayerData(player.getUniqueId());
+    if (params.equalsIgnoreCase("total_completed")) {
+      return String.valueOf(
+          playerCache.getPlayerStorageData(player.getUniqueId()).getCompletedQuests());
+    }
+
+    Optional<ActiveQuestPlayerData> dataOptional =
+        playerCache.getActiveQuestPlayerData(player.getUniqueId());
     if (dataOptional.isEmpty()) {
       return "None";
     }
@@ -48,16 +54,25 @@ public class QuestsExpansion extends PlaceholderExpansion {
 
     Quest quest = questOptional.get();
     Optional<Integer> optionalRequirement = questCache.getRequirement(quest.getId());
-      return optionalRequirement.map(integer -> switch (params) {
-          case "current_id" -> UtilChat.capitalize(quest.getId());
-          case "current_type" -> UtilChat.capitalize(quest.getQuestType().name());
-          case "current_associated_object" -> UtilChat.capitalize(
-                  quest.getQuestType().getInputFromAssociatedObject(quest.getAssociatedObject()));
-          case "current_progress" -> playerData.getCurrentQuestProgress() + "";
-          case "current_requirement" -> integer + "";
-          case "current_active_completed" -> playerData.getCompletedDailyQuests().size() + "";
-          case "current_active_requirement" -> questCache.getActiveQuestsEntrySet().size() + "";
-          default -> "Null";
-      }).orElse("None");
+    return optionalRequirement
+        .map(
+            integer ->
+                switch (params) {
+                  case "current_id" -> UtilChat.capitalize(quest.getId());
+                  case "current_type" -> UtilChat.capitalize(quest.getQuestType().name());
+                  case "current_associated_object" ->
+                      UtilChat.capitalize(
+                          quest
+                              .getQuestType()
+                              .getInputFromAssociatedObject(quest.getAssociatedObject()));
+                  case "current_progress" -> playerData.getCurrentQuestProgress() + "";
+                  case "current_requirement" -> integer + "";
+                  case "current_active_completed" ->
+                      playerData.getCompletedDailyQuests().size() + "";
+                  case "current_active_requirement" ->
+                      questCache.getActiveQuestsEntrySet().size() + "";
+                  default -> "Null";
+                })
+        .orElse("None");
   }
 }

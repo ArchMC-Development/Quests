@@ -42,8 +42,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
 public class QuestsPlugin extends JavaPlugin {
-  @Getter
-  private static QuestsAPI questsAPI;
+  @Getter private static QuestsAPI questsAPI;
   private HikariDataSource hikariDataSource;
   private QuestPlayerCache playerCache;
   private RedisPlayerData redisPlayerData;
@@ -183,10 +182,12 @@ public class QuestsPlugin extends JavaPlugin {
     //
     PluginManager pluginManager = getServer().getPluginManager();
     pluginManager.registerEvents(
-        new PlayerJoinLeaveListener(this, questsConfig, questCache, playerCache, redisPlayerData),
+        new PlayerJoinLeaveListener(
+            this, questsConfig, questCache, playerCache, redisPlayerData, storageDatabase),
         this);
     pluginManager.registerEvents(
-        new QuestTrackingListener(this, questsConfig, playerCache, questCache), this);
+        new QuestTrackingListener(this, questsConfig, playerCache, questCache, storageDatabase),
+        this);
     pluginManager.registerEvents(
         new SignChangeListener(questsConfig, signDatabase, signCache), this);
     getLogger().info("Quests listeners loaded...");

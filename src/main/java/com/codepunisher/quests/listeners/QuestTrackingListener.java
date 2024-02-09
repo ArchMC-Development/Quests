@@ -3,6 +3,8 @@ package com.codepunisher.quests.listeners;
 import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.config.QuestsConfig;
+import com.codepunisher.quests.database.QuestPlayerStorageDatabase;
+import com.codepunisher.quests.models.PlayerStorageData;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.models.QuestType;
@@ -10,7 +12,6 @@ import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -36,6 +37,7 @@ public class QuestTrackingListener implements Listener {
   private final QuestsConfig questsConfig;
   private final QuestPlayerCache playerCache;
   private final QuestCache questCache;
+  private final QuestPlayerStorageDatabase playerStorageDatabase;
 
   @EventHandler(ignoreCancelled = true)
   public void onBreak(BlockBreakEvent event) {
@@ -151,6 +153,11 @@ public class QuestTrackingListener implements Listener {
                 Bukkit.dispatchCommand(
                     Bukkit.getConsoleSender(), reward.replaceAll("%player%", player.getName()));
               });
+
+      // Updating cache/db (the completed count)
+      PlayerStorageData storageData = playerCache.getPlayerStorageData(uuid);
+      storageData.setCompletedQuests(storageData.getCompletedQuests() + 1);
+      playerStorageDatabase.insert(uuid, storageData);
 
       // Checking if they've completed all daily quests (new rewards)
       if (playerData.getCompletedDailyQuests().size()
