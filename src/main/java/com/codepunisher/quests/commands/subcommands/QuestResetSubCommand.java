@@ -9,6 +9,8 @@ import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.util.UtilChat;
+import fr.mrmicky.fastinv.FastInv;
+import fr.mrmicky.fastinv.FastInvManager;
 import lombok.AllArgsConstructor;
 import me.drepic.proton.common.ProtonManager;
 import me.drepic.proton.common.message.MessageHandler;
@@ -35,6 +37,9 @@ public class QuestResetSubCommand implements QuestsSubCommand {
   @Override
   public Consumer<CommandCall> getCommandCallConsumer() {
     return call -> {
+      // Close Menus
+      FastInvManager.closeAll();
+
       // Clearing
       questCache.removeAllActiveQuests();
       playerCache.removeAllActiveQuestUsers();
@@ -60,6 +65,9 @@ public class QuestResetSubCommand implements QuestsSubCommand {
     if (!reset) {
       return;
     }
+
+    // Close Menus
+    FastInvManager.closeAll();
 
     questCache.removeAllActiveQuests();
     playerCache.removeAllActiveQuestUsers();

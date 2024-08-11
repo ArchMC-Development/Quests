@@ -213,12 +213,9 @@ public class QuestsPlugin extends JavaPlugin {
     getLogger().info("Quests database closed...");
 
     // This allows the plugin to be plugman reloadable
-    playerCache
-        .getActiveQuestEntrySet()
-        .forEach(
-            entry -> {
-              redisPlayerData.updateRedisFromLocalCache(entry.getKey(), entry.getValue());
-            });
+    playerCache.getActiveQuestEntrySet().forEach(entry -> {
+      redisPlayerData.updateRedisFromLocalCache(entry.getKey(), entry.getValue());
+    });
 
     getLogger().info("Quests player cached dumped to redis...");
   }
