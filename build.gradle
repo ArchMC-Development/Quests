@@ -47,9 +47,10 @@ tasks.withType(JavaCompile) {
 }
 
 shadowJar {
+    relocate 'fr.mrmicky.fastinv', 'com.codepunisher.quests.libs'
+
     archiveClassifier.set('')
-    configurations = [project.configurations.compileClasspath]
-    dependencies {
-        include(dependency('*:*'))
-    }
+    destinationDirectory.set(file("$rootDir/target"))
 }
+
+jar.dependsOn shadowJar
