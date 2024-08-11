@@ -49,6 +49,20 @@ public enum QuestType {
       }
       return null;
     }
+  },
+  BLOCKS_PLACED(Material.OAK_PLANKS) {
+    @Override @SuppressWarnings("unchecked")
+    public <T> T getAssociationFromInput(String input) {
+      return (T) Material.valueOf(input.toUpperCase());
+    }
+
+    @Override
+    public <T> String getInputFromAssociatedObject(T object) {
+      if (object instanceof Material material) {
+        return material.name();
+      }
+      return null;
+    }
   };
 
   private final Material defaultDisplay;

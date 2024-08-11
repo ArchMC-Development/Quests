@@ -19,6 +19,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -43,6 +44,12 @@ public class QuestTrackingListener implements Listener {
   public void onBreak(BlockBreakEvent event) {
     handleQuestProgressIncrease(
         event.getPlayer(), QuestType.BLOCK_BREAK, event.getBlock().getType(), 1);
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onPlace(BlockPlaceEvent event) {
+    handleQuestProgressIncrease(
+            event.getPlayer(), QuestType.BLOCKS_PLACED, event.getBlock().getType(), 1);
   }
 
   @EventHandler(ignoreCancelled = true)
