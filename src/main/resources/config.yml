@@ -46,6 +46,8 @@ commands:
     Permission: "quests.menu"
   LanguageSubCommand:
     Permission: "quests.language"
+  ReloadSubCommand:
+    Permission: "quests.reload"
 
 # database
 mysql:

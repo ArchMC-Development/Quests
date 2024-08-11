@@ -10,7 +10,8 @@ public enum CmdType {
   ADD("AddSubCommand", true),
   DELETE("DeleteSubCommand", false),
   MENU("MenuSubCommand", false),
-  LANGUAGE("LanguageSubCommand", false);
+  LANGUAGE("LanguageSubCommand", false),
+  RELOAD("ReloadSubCommand", false);
 
   private final String configPath;
   private final boolean console;

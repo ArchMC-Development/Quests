@@ -28,6 +28,9 @@ messages:
     LanguageSubCommand:
       Command: "sprache"
       Usage: "Befehl zum Ändern der Sprache"
+    ReloadSubCommand:
+      Command: "neu-laden"
+      Usage: "Laden Sie das Plugin neu"
 
     # Quest sub command viewer
     #

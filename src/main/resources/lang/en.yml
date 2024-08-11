@@ -29,6 +29,9 @@ messages:
   LanguageSubCommand:
    Command: "language"
    Usage: "change language command"
+  ReloadSubCommand:
+   Command: "reload"
+   Usage: "reload the plugin"
 
 
   # Quest sub command viewer

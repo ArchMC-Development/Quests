@@ -64,5 +64,9 @@ public class QuestSubCommandRegistrar {
     questSubCommandCache.add(
         CmdType.LANGUAGE,
         new QuestLanguageSubCommand(plugin, questsConfig, playerCache, storageDatabase));
+    questSubCommandCache.add(
+            CmdType.RELOAD,
+            new QuestsReloadSubCommand(plugin, questsConfig)
+    );
   }
 }
