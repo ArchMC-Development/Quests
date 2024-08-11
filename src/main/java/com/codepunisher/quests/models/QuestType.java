@@ -77,7 +77,7 @@ public enum QuestType {
     @Override
     public <T> String getInputFromAssociatedObject(T object) {
       if (object instanceof Dimension dimension) {
-        return dimension.getName();
+        return dimension.name();
       }
       return null;
     }
