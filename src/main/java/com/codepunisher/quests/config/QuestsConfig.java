@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -117,8 +118,17 @@ public class QuestsConfig {
   }
 
   private void loadRedisPool(YamlDocument defaultConfig) {
+    final JedisPoolConfig config = new JedisPoolConfig();
+    config.setMaxIdle(0);
+    config.setTestOnBorrow(true);
+    config.setTestOnReturn(true);
     this.jedisPool =
-        new JedisPool(defaultConfig.getString("redis.Host"), defaultConfig.getInt("redis.Port"));
+        new JedisPool(config,
+                defaultConfig.getString("redis.Host"),
+                defaultConfig.getInt("redis.Port"),
+                0,
+                defaultConfig.getString("redis.Password"),
+                false);
   }
 
   // Loads if it does not exist, pulls if already exists

@@ -59,3 +59,4 @@ mysql:
 redis:
   Host: localhost
   Port: 6379
+  Password: $loppy-T0ppy_
