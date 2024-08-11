@@ -111,26 +111,24 @@ public class QuestTrackingListener implements Listener {
   public void onPlayerMove(PlayerMoveEvent event) {
     Player player = event.getPlayer();
     if (player.isGliding() || player.isFlying()) return;
-    plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-      Location from = event.getFrom().toBlockLocation();
-      from.setY(0);
-      from.setPitch(0);
-      from.setYaw(0);
-      Location to = event.getTo().toBlockLocation();
-      to.setY(0);
-      to.setPitch(0);
-      to.setYaw(0);
-      if (from.equals(to)) return;
-      Dimension dimension = switch (from.getWorld().getEnvironment()) {
-        case NORMAL, CUSTOM:
-          yield Dimension.OVERWORLD;
-        case THE_END:
-          yield Dimension.THE_END;
-        case NETHER:
-          yield Dimension.NETHER;
-      };
-      handleQuestProgressIncrease(player, QuestType.BLOCKS_TRAVELLED, dimension, 1);
-    });
+    Location from = event.getFrom().toBlockLocation();
+    from.setY(0);
+    from.setPitch(0);
+    from.setYaw(0);
+    Location to = event.getTo().toBlockLocation();
+    to.setY(0);
+    to.setPitch(0);
+    to.setYaw(0);
+    if (from.equals(to)) return;
+    Dimension dimension = switch (from.getWorld().getEnvironment()) {
+      case NORMAL, CUSTOM:
+        yield Dimension.OVERWORLD;
+      case THE_END:
+        yield Dimension.THE_END;
+      case NETHER:
+        yield Dimension.NETHER;
+    };
+    handleQuestProgressIncrease(player, QuestType.BLOCKS_TRAVELLED, dimension, 1);
   }
 
   @EventHandler
