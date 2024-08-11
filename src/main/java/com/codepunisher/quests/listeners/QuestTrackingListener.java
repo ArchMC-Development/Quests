@@ -4,14 +4,13 @@ import com.codepunisher.quests.cache.QuestCache;
 import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.config.QuestsConfig;
 import com.codepunisher.quests.database.QuestPlayerStorageDatabase;
-import com.codepunisher.quests.models.PlayerStorageData;
-import com.codepunisher.quests.models.Quest;
-import com.codepunisher.quests.models.ActiveQuestPlayerData;
-import com.codepunisher.quests.models.QuestType;
+import com.codepunisher.quests.models.*;
 import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -23,6 +22,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
@@ -107,13 +107,31 @@ public class QuestTrackingListener implements Listener {
     handleQuestProgressIncrease(killer, QuestType.ENTITY_KILLER, event.getEntity().getType(), 1);
   }
 
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerMove(PlayerMoveEvent event) {
+    Location from = event.getFrom().toBlockLocation();
+    from.setPitch(0);
+    from.setYaw(0);
+    Location to = event.getTo().toBlockLocation();
+    to.setPitch(0);
+    to.setYaw(0);
+    Player player = event.getPlayer();
+    if (from.equals(to)) return;
+    Dimension dimension = switch (from.getWorld().getEnvironment()) {
+      case NORMAL, CUSTOM: yield Dimension.OVERWORLD;
+      case THE_END: yield Dimension.THE_END;
+      case NETHER: yield Dimension.NETHER;
+    };
+    handleQuestProgressIncrease(player, QuestType.BLOCKS_TRAVELLED, dimension, 1);
+  }
+
   @EventHandler
   public void onQuit(PlayerQuitEvent event) {
     bossBarMap.remove(event.getPlayer().getUniqueId());
   }
 
   private <T> void handleQuestProgressIncrease(
-      Player player, QuestType questType, T associatedObject, int progressIncrease) {
+          Player player, QuestType questType, T associatedObject, int progressIncrease) {
     UUID uuid = player.getUniqueId();
     Optional<ActiveQuestPlayerData> playerDataOptional = playerCache.getActiveQuestPlayerData(uuid);
     if (playerDataOptional.isEmpty()) {
