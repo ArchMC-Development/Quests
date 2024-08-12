@@ -5,7 +5,10 @@ import com.codepunisher.quests.cache.QuestPlayerCache;
 import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.ActiveQuestPlayerData;
 import com.codepunisher.quests.util.UtilChat;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,27 +16,24 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Getter
 public class QuestsExpansion extends PlaceholderExpansion {
+  @Getter(AccessLevel.PRIVATE)
   private final QuestCache questCache;
+  @Getter(AccessLevel.PRIVATE)
   private final QuestPlayerCache playerCache;
 
-  @Override
-  public @NotNull String getIdentifier() {
-    return "quests";
-  }
+  public String identifier = "quests";
+  public String author = "CodePunisher & Preva1l";
+  public String version = "1.0";
 
-  @Override
-  public @NotNull String getAuthor() {
-    return "CodePunisher";
-  }
+    @Override
+    public boolean persist() {
+        return true;
+    }
 
-  @Override
-  public @NotNull String getVersion() {
-    return "1.0";
-  }
-
-  @Override
+    @Override
   public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
     if (params.equalsIgnoreCase("total_completed")) {
       return String.valueOf(
