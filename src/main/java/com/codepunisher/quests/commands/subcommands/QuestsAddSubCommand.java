@@ -9,9 +9,11 @@ import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.models.QuestType;
 import com.codepunisher.quests.util.UtilChat;
 import com.google.gson.Gson;
+import gg.scala.aware.Aware;
+import gg.scala.aware.message.AwareMessage;
+import gg.scala.aware.thread.AwareThreadContext;
+import kotlin.Pair;
 import lombok.AllArgsConstructor;
-import me.drepic.proton.common.ProtonManager;
-import me.drepic.proton.common.message.MessageHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,7 +27,7 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
     private final QuestsConfig questsConfig;
     private final QuestCache questCache;
     private final QuestDatabase questDatabase;
-    private final ProtonManager proton;
+    private final Aware<AwareMessage> aware;
     private final Gson gson;
 
     @Override
@@ -51,7 +53,11 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
                         new Quest(id, questType, associatedObject, min, max, permission, consoleCommandRewards);
                 questCache.add(quest);
                 questDatabase.insert(quest);
-                proton.broadcast("quest-plugin", "quest-add", gson.toJson(quest));
+                AwareMessage.of(
+                        "quest-add",
+                        aware,
+                        new Pair<>("quest", gson.toJson("quest"))
+                ).publish(AwareThreadContext.ASYNC, "quest-plugin");
                 plugin
                         .getLogger()
                         .info(String.format("%s has been added by %s", quest.getId(), sender.getName()));
@@ -73,8 +79,7 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
         };
     }
 
-    @MessageHandler(namespace = "quest-plugin", subject = "quest-add")
-    public void onCacheUpdateReceive(String jsonQuest) {
+    public void add(String jsonQuest) {
         questCache.add(gson.fromJson(jsonQuest, Quest.class));
     }
 }

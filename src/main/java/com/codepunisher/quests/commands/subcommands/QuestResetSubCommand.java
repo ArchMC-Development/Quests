@@ -10,9 +10,11 @@ import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.util.UtilChat;
 import fr.mrmicky.fastinv.FastInvManager;
+import gg.scala.aware.Aware;
+import gg.scala.aware.message.AwareMessage;
+import gg.scala.aware.thread.AwareThreadContext;
+import kotlin.Pair;
 import lombok.AllArgsConstructor;
-import me.drepic.proton.common.ProtonManager;
-import me.drepic.proton.common.message.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,7 +33,7 @@ public class QuestResetSubCommand implements QuestsSubCommand {
     private final RedisPlayerData redisPlayerData;
     private final QuestCache questCache;
     private final QuestPlayerCache playerCache;
-    private final ProtonManager proton;
+    private final Aware<AwareMessage> aware;
 
     @Override
     public Consumer<CommandCall> getCommandCallConsumer() {
@@ -51,20 +53,17 @@ public class QuestResetSubCommand implements QuestsSubCommand {
 
             // Updating caches across other server instances running this plugin
             informOnlinePlayersAboutReset();
-            proton.broadcast("quest-plugin", "quest-reset", true);
-
+            AwareMessage.of(
+                    "quest-reset",
+                    aware
+            ).publish(AwareThreadContext.ASYNC, "quest-plugin");
             CommandSender sender = call.getSender();
             sender.sendMessage(UtilChat.colorize(questsConfig.getLang(sender).getQuestsResetSuccess()));
             plugin.getLogger().info("Quests have been reset by " + sender.getName());
         };
     }
 
-    @MessageHandler(namespace = "quest-plugin", subject = "quest-reset")
-    public void onCacheUpdateReceive(boolean reset) {
-        if (!reset) {
-            return;
-        }
-
+    public void reset() {
         // Close Menus
         FastInvManager.closeAll();
 

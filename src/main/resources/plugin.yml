@@ -2,7 +2,7 @@ name: Quests
 version: ${project.version}
 author: CodePunisher
 main: com.codepunisher.quests.QuestsPlugin
-depend: [ Proton ]
+depend: [ store-spigot ]
 softdepend: [ PlaceholderAPI ]
 api-version: 1.20
 libraries:

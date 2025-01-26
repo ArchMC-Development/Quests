@@ -33,9 +33,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.mrmicky.fastinv.FastInvManager;
+import gg.scala.aware.Aware;
+import gg.scala.aware.AwareBuilder;
+import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec;
+import gg.scala.aware.message.AwareMessage;
+import kotlin.jvm.JvmClassMappingKt;
 import lombok.Getter;
-import me.drepic.proton.common.ProtonManager;
-import me.drepic.proton.common.ProtonProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -117,7 +120,10 @@ public class QuestsPlugin extends JavaPlugin {
                         quests -> {
                             quests.forEach(questCache::addActiveQuest);
                         });
-        ProtonManager proton = ProtonProvider.get();
+        Aware<AwareMessage> aware = AwareBuilder.of("rootkit:polls:messages", JvmClassMappingKt.getKotlinClass(AwareMessage.class))
+                .logger(getLogger())
+                .codec(AwareMessageCodec.INSTANCE)
+                .build();
         getLogger().info("Quests redis loaded...");
 
         //
@@ -157,7 +163,7 @@ public class QuestsPlugin extends JavaPlugin {
                         storageDatabase,
                         redisActiveQuests,
                         redisPlayerData,
-                        proton,
+                        aware,
                         gson);
         subCommandRegistrar.register();
         getLogger().info("Quests sub commands loaded...");

@@ -129,13 +129,16 @@ public class QuestsConfig {
         config.setMaxIdle(0);
         config.setTestOnBorrow(true);
         config.setTestOnReturn(true);
-        this.jedisPool =
-                new JedisPool(config,
-                        defaultConfig.getString("redis.Host"),
-                        defaultConfig.getInt("redis.Port"),
-                        0,
-                        defaultConfig.getString("redis.Password"),
-                        false);
+        this.jedisPool = defaultConfig.getString("redis.Password").isEmpty() ? new JedisPool(config,
+                defaultConfig.getString("redis.Host"),
+                defaultConfig.getInt("redis.Port"),
+                0)
+                : new JedisPool(config,
+                defaultConfig.getString("redis.Host"),
+                defaultConfig.getInt("redis.Port"),
+                0,
+                defaultConfig.getString("redis.Password"),
+                false);
     }
 
     // Loads if it does not exist, pulls if already exists

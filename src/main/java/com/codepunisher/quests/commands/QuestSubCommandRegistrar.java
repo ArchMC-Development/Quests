@@ -11,9 +11,12 @@ import com.codepunisher.quests.models.CmdType;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.google.gson.Gson;
+import gg.scala.aware.Aware;
+import gg.scala.aware.message.AwareMessage;
 import lombok.AllArgsConstructor;
-import me.drepic.proton.common.ProtonManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.annotation.Annotation;
 
 @AllArgsConstructor
 public class QuestSubCommandRegistrar {
@@ -26,7 +29,7 @@ public class QuestSubCommandRegistrar {
     private final QuestPlayerStorageDatabase storageDatabase;
     private final RedisActiveQuests redisActiveQuests;
     private final RedisPlayerData redisPlayerData;
-    private final ProtonManager proton;
+    private final Aware<AwareMessage> aware;
     private final Gson gson;
 
     public void register() {
@@ -38,12 +41,20 @@ public class QuestSubCommandRegistrar {
                         redisPlayerData,
                         questCache,
                         playerCache,
-                        proton);
-        proton.registerMessageHandlers(questsResetSubCommand);
+                        aware);
+
+        aware.listen("quest-reset", new Annotation[0], (message) -> {
+            questsResetSubCommand.reset();
+            return null;
+        });
 
         QuestsAddSubCommand questsAddSubCommand =
-                new QuestsAddSubCommand(plugin, questsConfig, questCache, questDatabase, proton, gson);
-        proton.registerMessageHandlers(questsAddSubCommand);
+                new QuestsAddSubCommand(plugin, questsConfig, questCache, questDatabase, aware, gson);
+
+        aware.listen("quest-add", new Annotation[0], (message) -> {
+            questsAddSubCommand.add(message.getContent().get("quest").toString());
+            return null;
+        });
 
         QuestDeleteSubCommand questDeleteSubCommand =
                 new QuestDeleteSubCommand(
@@ -53,8 +64,11 @@ public class QuestSubCommandRegistrar {
                         redisActiveQuests,
                         questCache,
                         playerCache,
-                        proton);
-        proton.registerMessageHandlers(questDeleteSubCommand);
+                        aware);
+        aware.listen("quest-delete", new Annotation[0], (message) -> {
+            questDeleteSubCommand.delete(message.getContent().get("quest").toString());
+            return null;
+        });
 
         questSubCommandCache.add(CmdType.ADD, questsAddSubCommand);
         questSubCommandCache.add(CmdType.DELETE, questDeleteSubCommand);
