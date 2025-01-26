@@ -21,60 +21,60 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestsAddSubCommand implements QuestsSubCommand {
-  private final JavaPlugin plugin;
-  private final QuestsConfig questsConfig;
-  private final QuestCache questCache;
-  private final QuestDatabase questDatabase;
-  private final ProtonManager proton;
-  private final Gson gson;
+    private final JavaPlugin plugin;
+    private final QuestsConfig questsConfig;
+    private final QuestCache questCache;
+    private final QuestDatabase questDatabase;
+    private final ProtonManager proton;
+    private final Gson gson;
 
-  @Override
-  public Consumer<CommandCall> getCommandCallConsumer() {
-    return call -> {
-      CommandSender sender = call.getSender();
-      try {
-        String id = call.getArg(1).toLowerCase();
-        if (questCache.getQuest(id).isPresent()) {
-          sender.sendMessage(UtilChat.colorize("&cThat quest id already exists!"));
-          return;
-        }
+    @Override
+    public Consumer<CommandCall> getCommandCallConsumer() {
+        return call -> {
+            CommandSender sender = call.getSender();
+            try {
+                String id = call.getArg(1).toLowerCase();
+                if (questCache.getQuest(id).isPresent()) {
+                    sender.sendMessage(UtilChat.colorize("&cThat quest id already exists!"));
+                    return;
+                }
 
-        QuestType questType = QuestType.valueOf(call.getArg(2).toUpperCase());
-        Object associatedObject = questType.getAssociationFromInput(call.getArg(3));
-        int min = Integer.parseInt(call.getArg(4));
-        int max = Integer.parseInt(call.getArg(5));
-        String permission = call.getArg(6);
-        String[] consoleCommandRewards =
-            Objects.requireNonNull(call.getStringFromArgumentsAtIndex(7)).split(",");
+                QuestType questType = QuestType.valueOf(call.getArg(2).toUpperCase());
+                Object associatedObject = questType.getAssociationFromInput(call.getArg(3));
+                int min = Integer.parseInt(call.getArg(4));
+                int max = Integer.parseInt(call.getArg(5));
+                String permission = call.getArg(6);
+                String[] consoleCommandRewards =
+                        Objects.requireNonNull(call.getStringFromArgumentsAtIndex(7)).split(",");
 
-        Quest quest =
-            new Quest(id, questType, associatedObject, min, max, permission, consoleCommandRewards);
-        questCache.add(quest);
-        questDatabase.insert(quest);
-        proton.broadcast("quest-plugin", "quest-add", gson.toJson(quest));
-        plugin
-            .getLogger()
-            .info(String.format("%s has been added by %s", quest.getId(), sender.getName()));
-        sender.sendMessage(
-            UtilChat.colorize(
-                questsConfig.getLang(sender).getQuestAddSuccess().replaceAll("%1%", id.replaceAll("_", " "))));
-      } catch (RuntimeException e) {
-        String options = Arrays.toString(QuestType.values());
-        sender.sendMessage(
-            UtilChat.colorize(questsConfig.getLang(sender).getInvalidQuestAddUsage())
-                .replaceAll(
-                    "%1%",
-                    "/"
-                        + call.getName()
-                        + " add <id> "
-                        + options
-                        + " <association> <min> <max> <permission> <console-command-rewards>"));
-      }
-    };
-  }
+                Quest quest =
+                        new Quest(id, questType, associatedObject, min, max, permission, consoleCommandRewards);
+                questCache.add(quest);
+                questDatabase.insert(quest);
+                proton.broadcast("quest-plugin", "quest-add", gson.toJson(quest));
+                plugin
+                        .getLogger()
+                        .info(String.format("%s has been added by %s", quest.getId(), sender.getName()));
+                sender.sendMessage(
+                        UtilChat.colorize(
+                                questsConfig.getLang(sender).getQuestAddSuccess().replaceAll("%1%", id.replaceAll("_", " "))));
+            } catch (RuntimeException e) {
+                String options = Arrays.toString(QuestType.values());
+                sender.sendMessage(
+                        UtilChat.colorize(questsConfig.getLang(sender).getInvalidQuestAddUsage())
+                                .replaceAll(
+                                        "%1%",
+                                        "/"
+                                                + call.getName()
+                                                + " add <id> "
+                                                + options
+                                                + " <association> <min> <max> <permission> <console-command-rewards>"));
+            }
+        };
+    }
 
-  @MessageHandler(namespace = "quest-plugin", subject = "quest-add")
-  public void onCacheUpdateReceive(String jsonQuest) {
-    questCache.add(gson.fromJson(jsonQuest, Quest.class));
-  }
+    @MessageHandler(namespace = "quest-plugin", subject = "quest-add")
+    public void onCacheUpdateReceive(String jsonQuest) {
+        questCache.add(gson.fromJson(jsonQuest, Quest.class));
+    }
 }

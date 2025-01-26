@@ -16,46 +16,46 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestLanguageSubCommand implements QuestsSubCommand {
-  private final JavaPlugin plugin;
-  private final QuestsConfig questsConfig;
-  private final QuestPlayerCache playerCache;
-  private final QuestPlayerStorageDatabase storageDatabase;
+    private final JavaPlugin plugin;
+    private final QuestsConfig questsConfig;
+    private final QuestPlayerCache playerCache;
+    private final QuestPlayerStorageDatabase storageDatabase;
 
-  @Override
-  public Consumer<CommandCall> getCommandCallConsumer() {
-    return call -> {
-      Player player = call.asPlayer();
-      if (call.getArgs().length <= 1
-          || !questsConfig.getLanguageCommandMap().containsKey(call.getArg(1) + ".yml")) {
-        player.sendMessage(
-            UtilChat.colorize(
-                questsConfig
-                    .getLang(player)
-                    .getLanguageDoesNotExist()
-                    .replace(
-                        "%1%",
-                        questsConfig.getLanguageCommandMap().keySet().stream()
-                            .map(key -> key.replace(".yml", ""))
-                            .toList()
-                            .toString())));
+    @Override
+    public Consumer<CommandCall> getCommandCallConsumer() {
+        return call -> {
+            Player player = call.asPlayer();
+            if (call.getArgs().length <= 1
+                    || !questsConfig.getLanguageCommandMap().containsKey(call.getArg(1) + ".yml")) {
+                player.sendMessage(
+                        UtilChat.colorize(
+                                questsConfig
+                                        .getLang(player)
+                                        .getLanguageDoesNotExist()
+                                        .replace(
+                                                "%1%",
+                                                questsConfig.getLanguageCommandMap().keySet().stream()
+                                                        .map(key -> key.replace(".yml", ""))
+                                                        .toList()
+                                                        .toString())));
 
-        return;
-      }
+                return;
+            }
 
-      String language = call.getArg(1);
-      UUID uuid = player.getUniqueId();
-      PlayerStorageData storageData = playerCache.getPlayerStorageData(uuid);
-      storageData.setLanguage(language);
+            String language = call.getArg(1);
+            UUID uuid = player.getUniqueId();
+            PlayerStorageData storageData = playerCache.getPlayerStorageData(uuid);
+            storageData.setLanguage(language);
 
-      playerCache.addPlayerStorage(uuid, storageData);
-      storageDatabase.insert(uuid, storageData);
-      plugin
-          .getLogger()
-          .info(String.format("%s changed their language to %s", player.getName(), language));
+            playerCache.addPlayerStorage(uuid, storageData);
+            storageDatabase.insert(uuid, storageData);
+            plugin
+                    .getLogger()
+                    .info(String.format("%s changed their language to %s", player.getName(), language));
 
-      player.sendMessage(
-          UtilChat.colorize(
-              questsConfig.getLang(player).getLanguageChangeSuccess().replaceAll("%1%", language)));
-    };
-  }
+            player.sendMessage(
+                    UtilChat.colorize(
+                            questsConfig.getLang(player).getLanguageChangeSuccess().replaceAll("%1%", language)));
+        };
+    }
 }

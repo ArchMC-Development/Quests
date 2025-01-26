@@ -1,9 +1,9 @@
 package com.codepunisher.quests.config;
 
-import com.codepunisher.quests.models.gui.ActiveQuestGuiInventory;
-import com.codepunisher.quests.models.gui.GuiInventory;
 import com.codepunisher.quests.models.GuiItem;
 import com.codepunisher.quests.models.LangCmd;
+import com.codepunisher.quests.models.gui.ActiveQuestGuiInventory;
+import com.codepunisher.quests.models.gui.GuiInventory;
 import lombok.Getter;
 import lombok.Setter;
 

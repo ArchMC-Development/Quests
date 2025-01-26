@@ -9,7 +9,6 @@ import com.codepunisher.quests.models.Quest;
 import com.codepunisher.quests.redis.RedisActiveQuests;
 import com.codepunisher.quests.redis.RedisPlayerData;
 import com.codepunisher.quests.util.UtilChat;
-import fr.mrmicky.fastinv.FastInv;
 import fr.mrmicky.fastinv.FastInvManager;
 import lombok.AllArgsConstructor;
 import me.drepic.proton.common.ProtonManager;
@@ -26,74 +25,74 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestResetSubCommand implements QuestsSubCommand {
-  private final JavaPlugin plugin;
-  private final QuestsConfig questsConfig;
-  private final RedisActiveQuests redisActiveQuests;
-  private final RedisPlayerData redisPlayerData;
-  private final QuestCache questCache;
-  private final QuestPlayerCache playerCache;
-  private final ProtonManager proton;
+    private final JavaPlugin plugin;
+    private final QuestsConfig questsConfig;
+    private final RedisActiveQuests redisActiveQuests;
+    private final RedisPlayerData redisPlayerData;
+    private final QuestCache questCache;
+    private final QuestPlayerCache playerCache;
+    private final ProtonManager proton;
 
-  @Override
-  public Consumer<CommandCall> getCommandCallConsumer() {
-    return call -> {
-      // Close Menus
-      FastInvManager.closeAll();
+    @Override
+    public Consumer<CommandCall> getCommandCallConsumer() {
+        return call -> {
+            // Close Menus
+            FastInvManager.closeAll();
 
-      // Clearing
-      questCache.removeAllActiveQuests();
-      playerCache.removeAllActiveQuestUsers();
-      redisActiveQuests.clear();
-      redisPlayerData.clear();
+            // Clearing
+            questCache.removeAllActiveQuests();
+            playerCache.removeAllActiveQuestUsers();
+            redisActiveQuests.clear();
+            redisPlayerData.clear();
 
-      // Re-instantiating
-      randomizeValuesForEachQuestAndCacheAsActive();
-      redisActiveQuests.addLocalCacheToRedis();
+            // Re-instantiating
+            randomizeValuesForEachQuestAndCacheAsActive();
+            redisActiveQuests.addLocalCacheToRedis();
 
-      // Updating caches across other server instances running this plugin
-      informOnlinePlayersAboutReset();
-      proton.broadcast("quest-plugin", "quest-reset", true);
+            // Updating caches across other server instances running this plugin
+            informOnlinePlayersAboutReset();
+            proton.broadcast("quest-plugin", "quest-reset", true);
 
-      CommandSender sender = call.getSender();
-      sender.sendMessage(UtilChat.colorize(questsConfig.getLang(sender).getQuestsResetSuccess()));
-      plugin.getLogger().info("Quests have been reset by " + sender.getName());
-    };
-  }
-
-  @MessageHandler(namespace = "quest-plugin", subject = "quest-reset")
-  public void onCacheUpdateReceive(boolean reset) {
-    if (!reset) {
-      return;
+            CommandSender sender = call.getSender();
+            sender.sendMessage(UtilChat.colorize(questsConfig.getLang(sender).getQuestsResetSuccess()));
+            plugin.getLogger().info("Quests have been reset by " + sender.getName());
+        };
     }
 
-    // Close Menus
-    FastInvManager.closeAll();
+    @MessageHandler(namespace = "quest-plugin", subject = "quest-reset")
+    public void onCacheUpdateReceive(boolean reset) {
+        if (!reset) {
+            return;
+        }
 
-    questCache.removeAllActiveQuests();
-    playerCache.removeAllActiveQuestUsers();
-    randomizeValuesForEachQuestAndCacheAsActive();
-    informOnlinePlayersAboutReset();
-  }
+        // Close Menus
+        FastInvManager.closeAll();
 
-  private void randomizeValuesForEachQuestAndCacheAsActive() {
-    Random random = new Random();
-    int counter = 0;
-    List<Quest> availableQuests = new ArrayList<>(questCache.getQuests());
-
-    while (counter < questsConfig.getRandomizedPoolAmount() && !availableQuests.isEmpty()) {
-      int randomIndex = random.nextInt(availableQuests.size());
-      Quest quest = availableQuests.remove(randomIndex);
-
-      int randomRequirement = random.nextInt((quest.getMax() - quest.getMin()) + 1) + quest.getMin();
-      questCache.addActiveQuest(quest.getId(), randomRequirement);
-
-      counter++;
+        questCache.removeAllActiveQuests();
+        playerCache.removeAllActiveQuestUsers();
+        randomizeValuesForEachQuestAndCacheAsActive();
+        informOnlinePlayersAboutReset();
     }
-  }
 
-  private void informOnlinePlayersAboutReset() {
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getQuestsResetToPlayers()));
+    private void randomizeValuesForEachQuestAndCacheAsActive() {
+        Random random = new Random();
+        int counter = 0;
+        List<Quest> availableQuests = new ArrayList<>(questCache.getQuests());
+
+        while (counter < questsConfig.getRandomizedPoolAmount() && !availableQuests.isEmpty()) {
+            int randomIndex = random.nextInt(availableQuests.size());
+            Quest quest = availableQuests.remove(randomIndex);
+
+            int randomRequirement = random.nextInt((quest.getMax() - quest.getMin()) + 1) + quest.getMin();
+            questCache.addActiveQuest(quest.getId(), randomRequirement);
+
+            counter++;
+        }
     }
-  }
+
+    private void informOnlinePlayersAboutReset() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendMessage(UtilChat.colorize(questsConfig.getLang(player).getQuestsResetToPlayers()));
+        }
+    }
 }

@@ -13,15 +13,15 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class QuestsMenuSubCommand implements QuestsSubCommand {
-  private final QuestsConfig questsConfig;
-  private final QuestCache questCache;
-  private final QuestPlayerCache playerCache;
+    private final QuestsConfig questsConfig;
+    private final QuestCache questCache;
+    private final QuestPlayerCache playerCache;
 
-  @Override
-  public Consumer<CommandCall> getCommandCallConsumer() {
-    return call -> {
-      Player player = call.asPlayer();
-      new ActiveQuestsMenu(player, questsConfig, questCache, playerCache).open(player);
-    };
-  }
+    @Override
+    public Consumer<CommandCall> getCommandCallConsumer() {
+        return call -> {
+            Player player = call.asPlayer();
+            new ActiveQuestsMenu(player, questsConfig, questCache, playerCache).open(player);
+        };
+    }
 }

@@ -26,7 +26,7 @@ public class GuiInventory {
   }
 
   public GuiInventory(
-      List<GuiItem> guiItems, int size, String title, String guiType, String openSound) {
+          List<GuiItem> guiItems, int size, String title, String guiType, String openSound) {
     this(guiItems, size, title, guiType);
     this.openSound = Sound.valueOf(openSound.toUpperCase());
   }

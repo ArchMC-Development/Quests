@@ -10,18 +10,20 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
-  String label();
+    String label();
 
-  String[] aliases() default {};
+    String[] aliases() default {};
 
-  String permission() default "";
+    String permission() default "";
 
-  String description() default "";
+    String description() default "";
 
-  /** The command itself isn't needed on the usage, as it's implied */
-  String usage() default "";
+    /**
+     * The command itself isn't needed on the usage, as it's implied
+     */
+    String usage() default "";
 
-  CommandArgument[] commandArgumentList() default {};
+    CommandArgument[] commandArgumentList() default {};
 
-  boolean player() default false;
+    boolean player() default false;
 }

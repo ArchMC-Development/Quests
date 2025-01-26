@@ -14,23 +14,23 @@ import org.bukkit.event.block.SignChangeEvent;
 
 @AllArgsConstructor
 public class SignChangeListener implements Listener {
-  private final QuestsConfig questsConfig;
-  private final QuestSignDatabase signDatabase;
-  private final QuestSignCache signCache;
+    private final QuestsConfig questsConfig;
+    private final QuestSignDatabase signDatabase;
+    private final QuestSignCache signCache;
 
-  @EventHandler
-  public void onSignUpdate(SignChangeEvent event) {
-    Player player = event.getPlayer();
-    if (!player.hasPermission(questsConfig.getSignCreatePermission())) {
-      return;
-    }
+    @EventHandler
+    public void onSignUpdate(SignChangeEvent event) {
+        Player player = event.getPlayer();
+        if (!player.hasPermission(questsConfig.getSignCreatePermission())) {
+            return;
+        }
 
-    QuestsLanguageConfig lang = questsConfig.getLang(player);
-    if (event.getLines()[0].equalsIgnoreCase(lang.getQuestSignConfiguration())) {
-      Location location = event.getBlock().getLocation();
-      signDatabase.insert(location);
-      signCache.add(location);
-      player.sendMessage(UtilChat.colorize(lang.getQuestSignUpdate()));
+        QuestsLanguageConfig lang = questsConfig.getLang(player);
+        if (event.getLines()[0].equalsIgnoreCase(lang.getQuestSignConfiguration())) {
+            Location location = event.getBlock().getLocation();
+            signDatabase.insert(location);
+            signCache.add(location);
+            player.sendMessage(UtilChat.colorize(lang.getQuestSignUpdate()));
+        }
     }
-  }
 }

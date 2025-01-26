@@ -5,7 +5,9 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 
-/** This is data that is more long form not temporary data like an active quest */
+/**
+ * This is data that is more long form not temporary data like an active quest
+ */
 @Getter
 @Setter
 public class PlayerStorageData {

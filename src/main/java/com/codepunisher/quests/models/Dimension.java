@@ -4,5 +4,4 @@ public enum Dimension {
     OVERWORLD,
     NETHER,
     THE_END
-    ;
 }

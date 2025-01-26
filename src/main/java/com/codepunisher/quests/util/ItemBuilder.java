@@ -1,16 +1,20 @@
 package com.codepunisher.quests.util;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ItemBuilder {
     private final ItemStack itemStack;
@@ -24,6 +28,18 @@ public class ItemBuilder {
     public ItemBuilder(Material material) {
         this.itemStack = new ItemStack(material);
         this.meta = itemStack.getItemMeta();
+    }
+
+    public static ItemBuilder of(ItemStack itemStack) {
+        return new ItemBuilder(itemStack);
+    }
+
+    public static ItemBuilder of(Material material) {
+        return new ItemBuilder(material);
+    }
+
+    public static boolean isAir(ItemStack stack) {
+        return stack == null || stack.getType() == Material.AIR;
     }
 
     public ItemBuilder name(String name) {
@@ -66,7 +82,6 @@ public class ItemBuilder {
                 .collect(Collectors.toList()));
         return this;
     }
-
 
     public ItemBuilder lore(String... lore) {
         meta.setLore(Arrays.stream(lore)
@@ -203,17 +218,5 @@ public class ItemBuilder {
     public ItemStack build() {
         itemStack.setItemMeta(meta);
         return itemStack;
-    }
-
-    public static ItemBuilder of(ItemStack itemStack) {
-        return new ItemBuilder(itemStack);
-    }
-
-    public static ItemBuilder of(Material material) {
-        return new ItemBuilder(material);
-    }
-
-    public static boolean isAir(ItemStack stack) {
-        return stack == null || stack.getType() == Material.AIR;
     }
 }

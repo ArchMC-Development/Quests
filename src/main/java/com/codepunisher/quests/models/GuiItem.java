@@ -15,54 +15,54 @@ import java.util.stream.Collectors;
 
 @Getter
 public class GuiItem {
-  private final ItemStack itemStack;
-  private final Set<GuiType> guiTypes;
-  private final List<Integer> slots;
-  private final ButtonType buttonType;
-  private final boolean closeOnClick;
+    private final ItemStack itemStack;
+    private final Set<GuiType> guiTypes;
+    private final List<Integer> slots;
+    private final ButtonType buttonType;
+    private final boolean closeOnClick;
 
-  @Nullable private Sound clickSound;
+    @Nullable private Sound clickSound;
 
-  public GuiItem(
-      Material material,
-      String name,
-      List<String> lore,
-      List<String> menuTypes,
-      List<Integer> slots,
-      String buttonType,
-      boolean closeOnClick) {
-    this.itemStack = convertItemStack(material, name, lore);
-    this.guiTypes =
-        menuTypes.stream()
-            .map(type -> GuiType.valueOf(type.toUpperCase()))
-            .collect(Collectors.toSet());
-    this.slots = slots;
-    this.buttonType = ButtonType.valueOf(buttonType.toUpperCase());
-    this.closeOnClick = closeOnClick;
-  }
-
-  public GuiItem(
-      Material material,
-      String name,
-      List<String> lore,
-      List<String> menuTypes,
-      List<Integer> slots,
-      String buttonType,
-      boolean closeOnClick,
-      String clickSound) {
-    this(material, name, lore, menuTypes, slots, buttonType, closeOnClick);
-    this.clickSound = Sound.valueOf(clickSound.toUpperCase());
-  }
-
-  private ItemStack convertItemStack(Material material, String name, List<String> lore) {
-    ItemStack item = new ItemStack(material);
-    ItemMeta meta = item.getItemMeta();
-    if (meta != null) {
-      meta.setDisplayName(UtilChat.colorize(name));
-      meta.setLore(lore.stream().map(UtilChat::colorize).collect(Collectors.toList()));
-      meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-      item.setItemMeta(meta);
+    public GuiItem(
+            Material material,
+            String name,
+            List<String> lore,
+            List<String> menuTypes,
+            List<Integer> slots,
+            String buttonType,
+            boolean closeOnClick) {
+        this.itemStack = convertItemStack(material, name, lore);
+        this.guiTypes =
+                menuTypes.stream()
+                        .map(type -> GuiType.valueOf(type.toUpperCase()))
+                        .collect(Collectors.toSet());
+        this.slots = slots;
+        this.buttonType = ButtonType.valueOf(buttonType.toUpperCase());
+        this.closeOnClick = closeOnClick;
     }
-    return item;
-  }
+
+    public GuiItem(
+            Material material,
+            String name,
+            List<String> lore,
+            List<String> menuTypes,
+            List<Integer> slots,
+            String buttonType,
+            boolean closeOnClick,
+            String clickSound) {
+        this(material, name, lore, menuTypes, slots, buttonType, closeOnClick);
+        this.clickSound = Sound.valueOf(clickSound.toUpperCase());
+    }
+
+    private ItemStack convertItemStack(Material material, String name, List<String> lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(UtilChat.colorize(name));
+            meta.setLore(lore.stream().map(UtilChat::colorize).collect(Collectors.toList()));
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
 }
