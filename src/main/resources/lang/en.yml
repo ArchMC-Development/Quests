@@ -20,6 +20,9 @@ messages:
   AddSubCommand:
     Command: "add"
     Usage: "add new quest"
+  EditSubCommand:
+    Command: "edit"
+    Usage: "change quest information"
   DeleteSubCommand:
    Command: "delete"
    Usage: "delete quest"
@@ -208,8 +211,8 @@ messages:
   # display placeholders
   # %quest_id%, %quest_type%, %quest_associated_object%
   # %quest_current_progress%, %quest_required_progress%
-  # %quest_color%, %quest_click_action%
-  Name: "%quest_color%&l%quest_id%"
+  # %quest_color%, %quest_click_action%, %quest_name%
+  Name: "%quest_color%&l%quest_name%"
   Lore:
    - "&8Quest Data"
    - ""
@@ -238,7 +241,9 @@ messages:
  QuestsResetSuccess: "&aReset and refreshed successfully!"
  QuestsResetToPlayers: "&aQuests have been reset!"
  QuestAddSuccess: "&aQuests successfully added &2%1%"
+ QuestEditSuccess: "&aQuest successfully edited &2%1%"
  InvalidQuestAddUsage: "&cInvalid usage: %1%"
+ InvalidQuestEditUsage: "&cInvalid usage: %1%"
  QuestJoin: "&aYou have joined the quest &2%1%"
  QuestSwitch: "&aYou have switched to the quest &2%1%"
  QuestLeave: "&cYou have left the quest &4%1%"

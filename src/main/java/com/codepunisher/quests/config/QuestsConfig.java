@@ -222,8 +222,12 @@ public class QuestsConfig {
         languageConfig.setQuestsResetToPlayers(
                 messageConfig.getString("messages.QuestsResetToPlayers"));
         languageConfig.setQuestAddSuccess(messageConfig.getString("messages.QuestAddSuccess"));
+        languageConfig.setQuestEditSuccess(messageConfig.getString("messages.QuestEditSuccess"));
         languageConfig.setInvalidQuestAddUsage(
                 messageConfig.getString("messages.InvalidQuestAddUsage"));
+        languageConfig.setInvalidQuestEditUsage(
+                messageConfig.getString("messages.InvalidQuestEditUsage")
+        );
         languageConfig.setQuestJoin(messageConfig.getString("messages.QuestJoin"));
         languageConfig.setQuestSwitch(messageConfig.getString("messages.QuestSwitch"));
         languageConfig.setQuestLeave(messageConfig.getString("messages.QuestLeave"));

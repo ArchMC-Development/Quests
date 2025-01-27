@@ -9,6 +9,7 @@ import org.bukkit.entity.EntityType;
 @AllArgsConstructor
 public class Quest {
     private final String id;
+    private final String displayName;
     private final QuestType questType;
     private final Object associatedObject;
     private final int min;

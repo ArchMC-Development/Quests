@@ -19,6 +19,9 @@ messages:
     AddSubCommand:
       Command: "hinzufügen"
       Usage: "Neue Quest hinzufügen"
+    EditSubCommand:
+      Command: "bearbeiten"
+      Usage: "Quest-Informationen ändern"
     DeleteSubCommand:
       Command: "löschen"
       Usage: "Quest löschen"
@@ -235,6 +238,7 @@ messages:
   QuestsResetSuccess: "&aErfolgreich zurückgesetzt und aktualisiert!"
   QuestsResetToPlayers: "&aQuests wurden zurückgesetzt!"
   QuestAddSuccess: "&aQuests erfolgreich hinzugefügt: &2%1%"
+  QuestEditSuccess: "&aQuest erfolgreich bearbeitet: &2%1%"
   InvalidQuestAddUsage: "&cUngültige Verwendung: %1%"
   QuestJoin: "&aDu bist der Quest beigetreten: &2%1%"
   QuestSwitch: "&aDu hast zur Quest gewechselt: &2%1%"

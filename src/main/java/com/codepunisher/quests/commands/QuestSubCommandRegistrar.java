@@ -70,8 +70,22 @@ public class QuestSubCommandRegistrar {
             return null;
         });
 
+        QuestEditSubCommand questEditSubCommand =
+                new QuestEditSubCommand(
+                        questsConfig,
+                        questCache,
+                        questDatabase,
+                        aware,
+                        playerCache,
+                        gson);
+        aware.listen("quest-edit", new Annotation[0], (message) -> {
+            questEditSubCommand.edit(message.getContent().get("quest").toString());
+            return null;
+        });
+
         questSubCommandCache.add(CmdType.ADD, questsAddSubCommand);
         questSubCommandCache.add(CmdType.DELETE, questDeleteSubCommand);
+        questSubCommandCache.add(CmdType.EDIT, questEditSubCommand);
         questSubCommandCache.add(CmdType.RESET, questsResetSubCommand);
         questSubCommandCache.add(
                 CmdType.MENU, new QuestsMenuSubCommand(questsConfig, questCache, playerCache));

@@ -20,6 +20,7 @@ public class QuestAdapter extends TypeAdapter<Quest> {
         }
 
         out.value(quest.getId());
+        out.value(quest.getDisplayName());
         out.value(quest.getQuestType().name());
         out.value(quest.getQuestType().getInputFromAssociatedObject(quest.getAssociatedObject()));
         out.value(quest.getMin());
@@ -37,12 +38,13 @@ public class QuestAdapter extends TypeAdapter<Quest> {
         }
 
         String id = in.nextString();
+        String name = in.nextString();
         QuestType questType = QuestType.valueOf(in.nextString().toUpperCase());
         Object associatedObject = questType.getAssociationFromInput(in.nextString());
         int min = in.nextInt();
         int max = in.nextInt();
         String permission = in.nextString();
         String[] rewards = in.nextString().substring(1, in.nextString().length() - 1).split(", ");
-        return new Quest(id, questType, associatedObject, min, max, permission, rewards);
+        return new Quest(id, name, questType, associatedObject, min, max, permission, rewards);
     }
 }

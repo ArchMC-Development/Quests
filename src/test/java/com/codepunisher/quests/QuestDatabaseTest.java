@@ -112,6 +112,7 @@ public class QuestDatabaseTest {
   private Quest getMockQuestObject() {
     return new Quest(
         "test",
+        "Test Quest",
         QuestType.BLOCK_BREAK,
         Material.DIAMOND_BLOCK,
         5,

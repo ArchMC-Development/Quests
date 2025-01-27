@@ -31,6 +31,7 @@ public class QuestDatabaseImpl implements QuestDatabase {
                                 String createTableQuery =
                                         "CREATE TABLE IF NOT EXISTS quests ("
                                                 + "id VARCHAR(255) PRIMARY KEY,"
+                                                + "name VARCHAR(255),"
                                                 + "quest_type VARCHAR(255),"
                                                 + "associated_object VARCHAR(255),"
                                                 + "min INT,"
@@ -60,21 +61,22 @@ public class QuestDatabaseImpl implements QuestDatabase {
                         () -> {
                             try (Connection connection = hikariDataSource.getConnection()) {
                                 String insertQuery =
-                                        "INSERT INTO quests (id, quest_type, associated_object, min, max, permission, console_command_rewards) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                                        "INSERT INTO quests (id, name, quest_type, associated_object, min, max, permission, console_command_rewards) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
                                 try (PreparedStatement preparedStatement =
                                              connection.prepareStatement(insertQuery)) {
                                     preparedStatement.setString(1, quest.getId());
-                                    preparedStatement.setString(2, quest.getQuestType().toString());
+                                    preparedStatement.setString(2, quest.getDisplayName());
+                                    preparedStatement.setString(3, quest.getQuestType().toString());
                                     preparedStatement.setString(
-                                            3,
+                                            4,
                                             quest
                                                     .getQuestType()
                                                     .getInputFromAssociatedObject(quest.getAssociatedObject()));
-                                    preparedStatement.setInt(4, quest.getMin());
-                                    preparedStatement.setInt(5, quest.getMax());
-                                    preparedStatement.setString(6, quest.getPermission());
-                                    preparedStatement.setString(7, String.join(",", quest.getRewards()));
+                                    preparedStatement.setInt(5, quest.getMin());
+                                    preparedStatement.setInt(6, quest.getMax());
+                                    preparedStatement.setString(7, quest.getPermission());
+                                    preparedStatement.setString(8, String.join(",", quest.getRewards()));
 
                                     preparedStatement.executeUpdate();
                                     plugin.getLogger().info("Quest successfully inserted into the database!");
@@ -147,6 +149,7 @@ public class QuestDatabaseImpl implements QuestDatabase {
                                     List<Quest> questList = new ArrayList<>();
                                     while (resultSet.next()) {
                                         String id = resultSet.getString("id");
+                                        String name = resultSet.getString("name");
                                         QuestType questType =
                                                 QuestType.valueOf(resultSet.getString("quest_type".toUpperCase()));
                                         Object associatedObject =
@@ -157,7 +160,7 @@ public class QuestDatabaseImpl implements QuestDatabase {
                                         String[] rewards = resultSet.getString("console_command_rewards").split(",");
 
                                         Quest quest =
-                                                new Quest(id, questType, associatedObject, min, max, permission, rewards);
+                                                new Quest(id, name, questType, associatedObject, min, max, permission, rewards);
 
                                         questList.add(quest);
                                     }

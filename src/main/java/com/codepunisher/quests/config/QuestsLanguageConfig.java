@@ -29,7 +29,9 @@ public class QuestsLanguageConfig {
     private String questsResetSuccess;
     private String questsResetToPlayers;
     private String questAddSuccess;
+    private String questEditSuccess;
     private String invalidQuestAddUsage;
+    private String invalidQuestEditUsage;
     private String questJoin;
     private String questSwitch;
     private String questLeave;

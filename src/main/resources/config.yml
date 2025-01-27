@@ -17,12 +17,12 @@ lang:
 #
 # If false, then all commands will
 # be displayed in the chat
-DisplayMenuWhenNoArguments: false
+DisplayMenuWhenNoArguments: true
 
 # How many quests should be pulled
 # from the total quests pull when
 # the quests are reset
-RandomizedPoolAmount: 3
+RandomizedPoolAmount: 5
 
 # Sign
 SignCreatePermission: "quests.createsign"
@@ -40,6 +40,8 @@ commands:
     Permission: "quests.reset"
   AddSubCommand:
     Permission: "quests.add"
+  EditSubCommand:
+    Permission: "quests.edit"
   DeleteSubCommand:
     Permission: "quests.delete"
   MenuSubCommand:

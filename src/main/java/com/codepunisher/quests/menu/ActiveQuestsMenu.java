@@ -168,6 +168,7 @@ public class ActiveQuestsMenu extends AbstractMenu {
 
         return input
                 .replaceAll("%quest_id%", UtilChat.capitalize(quest.getId()))
+                .replaceAll("%quest_name%", quest.getDisplayName())
                 .replaceAll("%quest_type%", UtilChat.capitalize(quest.getQuestType().name()))
                 .replaceAll(
                         "%quest_associated_object%",

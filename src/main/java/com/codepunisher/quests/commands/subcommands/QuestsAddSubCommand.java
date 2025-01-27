@@ -50,13 +50,13 @@ public class QuestsAddSubCommand implements QuestsSubCommand {
                         Objects.requireNonNull(call.getStringFromArgumentsAtIndex(7)).split(",");
 
                 Quest quest =
-                        new Quest(id, questType, associatedObject, min, max, permission, consoleCommandRewards);
+                        new Quest(id, id, questType, associatedObject, min, max, permission, consoleCommandRewards);
                 questCache.add(quest);
                 questDatabase.insert(quest);
                 AwareMessage.of(
                         "quest-add",
                         aware,
-                        new Pair<>("quest", gson.toJson("quest"))
+                        new Pair<>("quest", gson.toJson(quest))
                 ).publish(AwareThreadContext.ASYNC, "quest-plugin");
                 plugin
                         .getLogger()

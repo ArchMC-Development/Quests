@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum CmdType {
     RESET("ResetSubCommand", true),
     ADD("AddSubCommand", true),
+    EDIT("EditSubCommand", true),
     DELETE("DeleteSubCommand", false),
     MENU("MenuSubCommand", false),
     LANGUAGE("LanguageSubCommand", false),
