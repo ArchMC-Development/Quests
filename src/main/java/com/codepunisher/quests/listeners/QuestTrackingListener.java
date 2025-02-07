@@ -8,6 +8,7 @@ import com.codepunisher.quests.models.*;
 import com.codepunisher.quests.util.ItemBuilder;
 import com.codepunisher.quests.util.UtilChat;
 import lombok.AllArgsConstructor;
+import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
@@ -94,9 +95,10 @@ public class QuestTrackingListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityDamage(EntityDeathEvent event) {
+        boolean playerKill = false;
         LivingEntity livingEntity = event.getEntity();
         if (livingEntity instanceof Player) {
-            return;
+            playerKill = true;
         }
 
         Player killer = livingEntity.getKiller();
@@ -104,6 +106,11 @@ public class QuestTrackingListener implements Listener {
             return;
         }
 
+        if (playerKill) {
+            val player = (Player) livingEntity;
+            handleQuestProgressIncrease(killer, QuestType.KILL_PLAYER, player.getName(), 1);
+            return;
+        }
         handleQuestProgressIncrease(killer, QuestType.ENTITY_KILLER, event.getEntity().getType(), 1);
     }
 
@@ -182,7 +189,7 @@ public class QuestTrackingListener implements Listener {
                     .forEach(
                             reward -> {
                                 Bukkit.dispatchCommand(
-                                        Bukkit.getConsoleSender(), reward.replaceAll("%player%", player.getName()));
+                                        Bukkit.getConsoleSender(), reward.replace("%player%", player.getName()));
                             });
 
             // Updating cache/db (the completed count)
@@ -199,7 +206,7 @@ public class QuestTrackingListener implements Listener {
                         .forEach(
                                 reward -> {
                                     Bukkit.dispatchCommand(
-                                            Bukkit.getConsoleSender(), reward.replaceAll("%player%", player.getName()));
+                                            Bukkit.getConsoleSender(), reward.replace("%player%", player.getName()));
                                 });
             }
         }
@@ -272,9 +279,9 @@ public class QuestTrackingListener implements Listener {
                                 questsConfig
                                         .getLang(player)
                                         .getQuestBossBar()
-                                        .replaceAll("%1%", UtilChat.capitalize(playerData.getCurrentQuestId()))
-                                        .replaceAll("%2%", playerData.getCurrentQuestProgress() + "")
-                                        .replaceAll("%3%", optionalInteger.get() + "")),
+                                        .replace("%1%", UtilChat.capitalize(playerData.getCurrentQuestId()))
+                                        .replace("%2%", playerData.getCurrentQuestProgress() + "")
+                                        .replace("%3%", optionalInteger.get() + "")),
                         BarColor.GREEN,
                         BarStyle.SOLID);
 

@@ -2,7 +2,9 @@ package com.codepunisher.quests.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
 
 @Getter
@@ -64,6 +66,21 @@ public enum QuestType {
         public <T> String getInputFromAssociatedObject(T object) {
             if (object instanceof Material material) {
                 return material.name();
+            }
+            return null;
+        }
+    },
+    KILL_PLAYER(Material.STONE_SWORD) {
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T getAssociationFromInput(String input) {
+            return (T) Bukkit.getOfflinePlayer(input);
+        }
+
+        @Override
+        public <T> String getInputFromAssociatedObject(T object) {
+            if (object instanceof OfflinePlayer player) {
+                return player.getName();
             }
             return null;
         }
