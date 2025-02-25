@@ -1,11 +1,9 @@
 name: Quests
 version: ${project.version}
 author: CodePunisher
-main: com.codepunisher.quests.QuestsPlugin
-depend: [ store-spigot ]
+main: lol.arch.quests.QuestsPlugin
+depend: [ store-spigot, cloudsync ]
 softdepend: [ PlaceholderAPI ]
 api-version: 1.20
 libraries:
-  - redis.clients:jedis:5.0.0
   - dev.dejvokep:boosted-yaml:1.3
-  - com.zaxxer:HikariCP:5.1.0
