@@ -17,20 +17,22 @@ import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.entity.EntityTameEvent;
+import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -45,6 +47,12 @@ public class QuestTrackingListener implements Listener {
     public void onBreak(BlockBreakEvent event) {
         handleQuestProgressIncrease(
                 event.getPlayer(), QuestType.BLOCK_BREAK, event.getBlock().getType(), 1);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDamage(BlockDamageEvent event) {
+        handleQuestProgressIncrease(
+                event.getPlayer(), QuestType.DAMAGE_BLOCK, event.getBlock().getType(), 1);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -108,10 +116,10 @@ public class QuestTrackingListener implements Listener {
 
         if (playerKill) {
             val player = (Player) livingEntity;
-            handleQuestProgressIncrease(killer, QuestType.KILL_PLAYER, player.getName(), 1);
+            handleQuestProgressIncrease(killer, QuestType.KILL_PLAYER, player, 1);
             return;
         }
-        handleQuestProgressIncrease(killer, QuestType.ENTITY_KILLER, event.getEntity().getType(), 1);
+        handleQuestProgressIncrease(killer, QuestType.MOB_KILLER, event.getEntity().getType(), 1);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -137,6 +145,97 @@ public class QuestTrackingListener implements Listener {
         };
         handleQuestProgressIncrease(player, QuestType.BLOCKS_TRAVELLED, dimension, 1);
     }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onShear(PlayerShearEntityEvent event) {
+        handleQuestProgressIncrease(
+                event.getPlayer(), QuestType.SHEAR_ENTITY, event.getEntity().getType(), 1);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onTame(EntityTameEvent event) {
+        handleQuestProgressIncrease(
+                Bukkit.getPlayer(event.getOwner().getUniqueId()),
+                QuestType.TAME_MOB,
+                event.getEntity().getType(),
+                1
+        );
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFillBucket(PlayerBucketFillEvent event) {
+        handleQuestProgressIncrease(
+                event.getPlayer(),
+                QuestType.FILL_BUCKET,
+                event.getBucket(),
+                1
+        );
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onConsume(PlayerItemConsumeEvent event) {
+        handleQuestProgressIncrease(
+                event.getPlayer(),
+                QuestType.CONSUME_ITEM,
+                event.getItem().getType(),
+                1
+        );
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void inventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getType() == InventoryType.BREWING) {
+            if (!(event.getSlotType() == InventoryType.SlotType.CRAFTING
+                    || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY))) return;
+            if (event.getCurrentItem() == null) return;
+            handleQuestProgressIncrease(
+                    (Player) event.getWhoClicked(),
+                    QuestType.BREW_POTION,
+                    ((PotionMeta) event.getCurrentItem().getItemMeta()).getBasePotionType(),
+                    1
+            );
+            return;
+        }
+        if (event.getInventory().getType() == InventoryType.FURNACE
+                || event.getInventory().getType() == InventoryType.BLAST_FURNACE
+                || event.getInventory().getType() == InventoryType.SMOKER) {
+            if (!(event.getSlotType() == InventoryType.SlotType.RESULT
+                    || event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY))) return;
+            if (event.getCurrentItem() == null) return;
+            handleQuestProgressIncrease(
+                    (Player) event.getWhoClicked(),
+                    QuestType.SMELT_ITEM,
+                    event.getCurrentItem().getItemMeta(),
+                    event.getCurrentItem().getAmount()
+            );
+            return;
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEnchant(EnchantItemEvent event) {
+        for (Enchantment enchantment : event.getEnchantsToAdd().keySet()) {
+            handleQuestProgressIncrease(
+                    event.getEnchanter(),
+                    QuestType.ENCHANT_ITEM,
+                    enchantment,
+                    1
+            );
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFish(PlayerFishEvent event) {
+        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
+        if (!(event.getCaught() instanceof Item item)) return;
+        handleQuestProgressIncrease(
+                event.getPlayer(),
+                QuestType.CATCH_FISH,
+                item.getItemStack().getType(),
+                1
+        );
+    }
+
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
